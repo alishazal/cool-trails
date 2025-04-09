@@ -1,2 +1,2 @@
 # cool-trails
-cool trails app
+cool trails app 🎉
