@@ -1,0 +1,4 @@
+fastapi==0.95.1
+uvicorn==0.22.0
+SQLAlchemy==1.4.47
+pybars3==0.9.1
