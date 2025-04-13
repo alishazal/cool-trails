@@ -45,21 +45,19 @@ def search(q: str = ""):
 # Trail info page: loads details via SQL and renders trail.hbs
 @app.get("/trail/{trail_id}", response_class=HTMLResponse)
 def trail_detail(trail_id: int):
-    trail = domain.get_trail_info(trail_id)
-    if not trail:
+    trail_dict, center = domain.get_trail_info(trail_id)
+    if not trail_dict:
         raise HTTPException(status_code=404, detail="Trail not found")
-    context = {"trail": trail}
+    context = {"trail": trail_dict, "center": center}
     html_content = render_template("trail.hbs", context)
     return HTMLResponse(content=html_content)
 
-# 
+# Add test trail
 @app.post("/trail/add-test", response_class=HTMLResponse)
 def add_test_trail(
     name: str = "Test Trail",
     location: str = "Los Angeles, CA",
-    description: str = "A sample trail added via API for testing.",
-    latitude: float = 34.0522,
-    longitude: float = -118.2437
+    description: str = "A sample trail added via API for testing."
 ):
-    new_trail = domain.add_test_trail(name, location, description, latitude, longitude)
+    new_trail = domain.add_test_trail(name, location, description)
     return f"Added Trail with ID {new_trail.id}"

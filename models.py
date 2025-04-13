@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, Text
 from database import Base
 
 class Trail(Base):
@@ -8,5 +8,4 @@ class Trail(Base):
     name = Column(String, unique=True, index=True)
     location = Column(String, index=True)
     description = Column(String, index=True)
-    latitude = Column(Float, nullable=True)
-    longitude = Column(Float, nullable=True)
+    polygon = Column(Text)

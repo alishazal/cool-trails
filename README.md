@@ -8,8 +8,9 @@ Cool trails app 🎉
 
 ## Getting Started
 1. Initialize a venv or conda environment. In VSCode you can do this by doing ```cmd + shift + P```, then select "Python: Create Environment", then select "Venv", and finally select your Python version.
-2. Run ```pip install -r requirements.txt``` in the terminal to install all required libraries in the env.
-3. To run the app, run the following in the terminal at the root directory of this project: ```uvicorn main:app --reload```
+2. Run ```brew install geos``` in your terminal to install GEOS which is required to install Shapely (one of the Python libraries we're using).
+3. Run ```pip install -r requirements.txt``` in your terminal to install all required Python libraries in the env.
+4. To run the app, run the following in your terminal at the root directory of this project: ```uvicorn main:app --reload```
 
 ## Usage
 
