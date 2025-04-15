@@ -3,3 +3,4 @@ uvicorn==0.22.0
 SQLAlchemy==1.4.47
 pybars3==0.9.1
 Shapely==2.1.0
+openai
