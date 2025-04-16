@@ -1,3 +1,112 @@
 body {
     padding-top: 20px;
 }
+
+
+/* styles.css */
+
+/* Base styling */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* Header */
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+h3, h4 {
+    color: #34495e;
+}
+
+/* Trail description */
+.text-muted {
+    font-size: 1.1rem;
+}
+
+/* Review Cards */
+.list-group-item {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    transition: box-shadow 0.2s ease;
+}
+
+.list-group-item:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.list-group-item h5 {
+    color: #2d3436;
+    font-weight: 600;
+}
+
+/* Form Styling */
+form {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="number"],
+textarea {
+    border-radius: 0.3rem;
+    box-shadow: none;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #66afe9;
+    outline: 0;
+    box-shadow: 0 0 5px rgba(102, 175, 233, 0.6);
+}
+
+/* Button Enhancements */
+.btn-primary {
+    background-color: #27ae60;
+    border-color: #27ae60;
+}
+
+.btn-primary:hover {
+    background-color: #219150;
+    border-color: #219150;
+}
+
+.btn-outline-secondary {
+    border-color: #95a5a6;
+    color: #95a5a6;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #95a5a6;
+    color: white;
+}
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    .list-group-item {
+        padding: 0.75rem;
+    }
+
+    form {
+        padding: 1rem;
+    }
+}
