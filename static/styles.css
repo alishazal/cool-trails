@@ -96,6 +96,58 @@ textarea:focus {
     color: white;
 }
 
+.filter-sidebar {
+    position: fixed;
+    top: 0;
+    right: -350px;
+    width: 320px;
+    height: 100%;
+    background: white;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    transition: right 0.3s ease-in-out;
+    z-index: 1050;
+    overflow-y: auto;
+    border-top-left-radius: 1rem;
+    border-bottom-left-radius: 1rem;
+  }
+
+  .filter-sidebar.open {
+    right: 0;
+  }
+
+  .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: none;
+    z-index: 1040;
+  }
+
+  .overlay.show {
+    display: block;
+  }
+
+  .filter-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    font-size: 0.9rem;
+  }
+
+  .filter-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+  }
+
 /* Responsive tweaks */
 @media (max-width: 576px) {
     h1 {
