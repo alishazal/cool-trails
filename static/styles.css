@@ -162,3 +162,192 @@ textarea:focus {
         padding: 1rem;
     }
 }
+
+
+
+/* Start Home page css */
+
+body {
+    background-color: #a2b8a1;
+    color: #333;
+    font-family: sans-serif;
+}
+
+.container.mt-4 {
+    background-color: transparent;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+h1 {
+    color: #e0e8b0;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+h1::before {
+    content: '\2744\FE0F';
+    margin-right: 0.5em;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+form.d-flex {
+    position: relative;
+    margin-top: 1rem;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+form.d-flex::before {
+    content: '\1F50D';
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    color: #6c757d;
+    pointer-events: none;
+    font-size: 1rem;
+}
+
+form.d-flex input.form-control {
+    border-radius: 8px;
+    padding-left: 40px;
+    padding-right: 55px;
+    border: 1px solid #ced4da;
+    box-shadow: none !important;
+    background-color: #fff;
+    height: calc(1.5em + 0.75rem + 2px);
+    line-height: 1.5;
+}
+
+form.d-flex input.form-control:focus {
+    outline: none;
+}
+
+form.d-flex button[type="submit"] {
+    display: none !important;
+}
+
+.filter-button {
+    position: absolute;
+    right: 5px;
+    top: 0;
+    bottom: 0;
+    margin-bottom: 0 !important;
+    display: flex;
+    align-items: center;
+    z-index: 3;
+}
+
+.filter-button button.btn-outline-success {
+    background-color: transparent !important;
+    border: none !important;
+    color: #6c757d !important;
+    padding: 0 10px !important;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    text-indent: -9999px;
+    overflow: hidden;
+    width: 40px;
+    text-align: center;
+}
+
+.filter-button button.btn-outline-success::before {
+    content: '\1F39B\FE0F';
+    text-indent: 0;
+    display: inline-block;
+}
+
+.filter-button button.btn-outline-success:focus,
+.filter-button button.btn-outline-success:hover {
+    box-shadow: none !important;
+    color: #000 !important;
+}
+
+.filter-sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100%;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    transition: right 0.3s ease-in-out;
+    z-index: 1050;
+    overflow-y: auto;
+}
+
+.filter-sidebar.open {
+    right: 0;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+    z-index: 1040;
+}
+
+.overlay.show {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.filter-sidebar .btn-close {
+    margin: -10px -10px 10px auto;
+    display: block;
+}
+
+.filter-sidebar h4 {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+.filter-section {
+    margin-bottom: 1.5rem;
+}
+
+.filter-section h5 {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.filter-footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filter-footer .btn {
+    width: auto;
+}
