@@ -1,9 +1,10 @@
 import os
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi import Request
 from pybars import Compiler
+
+from services.osm import fetch_trails, fetch_canopy
 import models, database, domain
 
 app = FastAPI()
@@ -36,8 +37,8 @@ def home():
 
 # Search page: runs a SQL query and renders search.hbs
 @app.get("/search", response_class=HTMLResponse)
-def search(q: str = ""):
-    trails = domain.search_trails(q)
+def search(q: str = "", page: int = 1, limit: int = 10):
+    trails = domain.search_trails(q, page, limit)
     context = {"trails": trails}
     html_content = render_template("search.hbs", context)
     return HTMLResponse(content=html_content)
@@ -52,12 +53,16 @@ def trail_detail(trail_id: int):
     html_content = render_template("trail.hbs", context)
     return HTMLResponse(content=html_content)
 
-# Add test trail
-@app.post("/trail/add-test", response_class=HTMLResponse)
-def add_test_trail(
-    name: str = "Test Trail",
-    location: str = "Los Angeles, CA",
-    description: str = "A sample trail added via API for testing."
-):
-    new_trail = domain.add_test_trail(name, location, description)
-    return f"Added Trail with ID {new_trail.id}"
+@app.get("/trails/osm")
+def api_trails(bbox: str):
+    """
+    GET /trails/osm?bbox=34.1,-118.3,34.3,-118.1
+    """
+    return JSONResponse(fetch_trails(bbox))
+
+@app.get("/canopy/osm")
+def api_trails(bbox: str):
+    """
+    GET /canopy/osm?bbox=34.1,-118.3,34.3,-118.1
+    """
+    return JSONResponse(fetch_canopy(bbox))

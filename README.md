@@ -8,26 +8,29 @@ Cool trails app 🎉
 
 ## Getting Started
 1. Initialize a venv or conda environment. In VSCode you can do this by doing ```cmd + shift + P```, then select "Python: Create Environment", then select "Venv", and finally select your Python version.
-2. Run ```brew install geos``` in your terminal to install GEOS which is required to install Shapely (one of the Python libraries we're using).
-3. Run ```pip install -r requirements.txt``` in your terminal to install all required Python libraries in the env.
-4. To run the app, run the following in your terminal at the root directory of this project: ```uvicorn main:app --reload```
+2. Run ```brew install geos``` in terminal to install GEOS which is required to install Shapely (one of the Python libraries we're using).
+3. Run ```pip install -r requirements.txt``` in terminal to install all required Python libraries in the env.
+4. To run the app, run the following in terminal at the root directory of this project: ```uvicorn main:app --reload```
+5. The app will be running on ```http://localhost:8000/``` or check the logs in the terminal to see which port its running on.
+6. Next, download the california trails data by running ```sh scripts/download_data.sh``` in terminal at the root directory.
+7. Insert the trails from the file to the database. Run ```python -m scripts.ingest_ca_trails``` in terminal at the root directory.
+8. Then merge broken trails (openstreetmap breaks trails due to varying surfaces, so we're gonna stitch segments together to form full trails). Run ```python -m scripts.merge_segments```.
 
 ## Usage
 
 #### Swagger API Docs
-All endpoints can be tested by visiting ```http://localhost:8000/docs```. This is powered by Swagger, which comes with FastAPI.
+All endpoints can be tested by visiting ```http://localhost:8000/docs```. This is powered by Swagger, which comes with FastAPI, for building automatic api docs.
 
 #### Endpoints / Pages
 The following endpoints are accessible through the browser
 - /home
 - /search
 - /trail/{trail_id}
-- /trail/add-test is a POST api and can be called by the swagger url above to add any test trails.
 
 #### Database
 To access the database do the following:
 1. Run the app by following the Getting Started instructions.
 2. In your terminal in the root directory run this command: ```sqlite3 trails.db```
-3. Now you should be in the database file. You can run commands like ```.tables```, ```.scheme trails```, etc to check out the available tables, their schema, and so on.
+3. Now you should be in the database file. You can run commands like ```.tables``` or any other sql commands to check out the available tables, etc.
 
 If you make changes to the database schema, delete the trails.db file and run the server again to have a new trails.db file created.

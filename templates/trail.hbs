@@ -29,42 +29,102 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/suncalc@1.9.0/suncalc.js"></script>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- point-in-polygon helper -->
+  <script src="https://unpkg.com/leaflet-pip@1.1.0/leaflet-pip.min.js"></script>
+
   <script>
-   console.log("TESSSTING")
-    // Use the computed centroid if available; otherwise, fallback to a default value.
-    var centerLat = {{#if center}}{{center.lat}}{{else}}0{{/if}};
-    var centerLng = {{#if center}}{{center.lng}}{{else}}0{{/if}};
-    console.log(centerLat, centerLng)
-    // Initialize the map at the computed centroid
-    var map = L.map('map').setView([centerLat, centerLng], 13);
+    /* ---------- helpers ---------- */
+    function sunVector(lat, lng, date = new Date()) {
+      const pos = SunCalc.getPosition(date, lat, lng);
+      return { az: pos.azimuth, alt: pos.altitude };   // radians
+    }
 
-    // Add an OpenStreetMap tile layer
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
+    async function cloudCover(lat, lng) {
+      const url =
+        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=cloudcover&forecast_days=1`;
+      const resp = await fetch(url);
+      const data = await resp.json();
+      const idx = data.hourly.time.indexOf(
+        new Date().toISOString().slice(0, 13) + ":00"
+      );
+      return data.hourly.cloudcover[idx];              // %
+    }
+
+    /* ---------- initialise map ---------- */
+    const map = L.map("map").setView([0, 0], 13);      // temp view (will recalc)
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "© OpenStreetMap contributors",
+      maxZoom: 19,
     }).addTo(map);
 
-    // If a valid polygon exists, parse it and add to the map.
-    // {{trail.polygon}} is rendered as a raw JSON string.
-    var trailPolygon = {{{trail.polygon}}};
-    L.geoJSON(trailPolygon, {
-      style: {
-        color: 'blue',
-        weight: 4,
-        opacity: 0.1
+    /* ---------- draw stored polygon ---------- */
+    const trailPolygon = {{{trail.polygon}}};
+    const polyLayer = L.geoJSON(trailPolygon, {
+      style: { color: "#0077ff", weight: 3, opacity: 0.6 },
+    }).addTo(map);
+
+    // Auto-zoom to polygon if centre not supplied
+    map.fitBounds(polyLayer.getBounds(), { padding: [20, 20] });
+    const center = map.getCenter();                    // use this for API bbox
+
+    /* ---------- dynamic shade logic ---------- */
+    (async function () {
+      // 1. derive a ~500 m bbox around the map centre
+      const Δ = 0.004;                                 // ≈ ~450 m in deg
+      const bbox = `${center.lat - Δ},${center.lng - Δ},${center.lat + Δ},${center.lng + Δ}`;
+
+      // 2. fetch OSM trail segments + canopy polygons
+      const [trailFC, canopyFC] = await Promise.all([
+        fetch(`/trails/osm?bbox=${bbox}`).then((r) => r.json()),
+        fetch(`/canopy/osm?bbox=${bbox}`).then((r) => r.json()),
+      ]);
+
+      // 3. draw canopy and keep a reference for point-in-polygon tests
+      const canopyLayer = L.geoJSON(canopyFC, {
+        style: { color: "#228b22", fillOpacity: 0.35, weight: 0 },
+      }).addTo(map);
+
+      // 4. colour trail segments green/orange
+      const shadeLayer = L.layerGroup().addTo(map);
+      const altitudeThr = 15 * Math.PI / 180;          // 15°
+      const cloudThr = 70;                             // 70 %
+
+      for (const feat of trailFC.features) {
+        const coords = feat.geometry.coordinates;
+        for (let i = 0; i < coords.length - 1; i++) {
+          const [lon1, lat1] = coords[i];
+          const [lon2, lat2] = coords[i + 1];
+          const midLat = (lat1 + lat2) / 2;
+          const midLon = (lon1 + lon2) / 2;
+
+          const sun = sunVector(midLat, midLon);
+          const cloudy = (await cloudCover(midLat, midLon)) > cloudThr;
+          const underCanopy =
+            leafletPip.pointInLayer([midLon, midLat], canopyLayer).length > 0;
+
+          const shaded =
+            cloudy ||
+            (underCanopy && sun.altitude > -0.05) ||
+            sun.altitude < altitudeThr;
+
+          L.polyline(
+            [
+              [lat1, lon1],
+              [lat2, lon2],
+            ],
+            {
+              color: shaded ? "green" : "orange",
+              weight: 6,
+              opacity: 0.9,
+            }
+          ).addTo(shadeLayer);
+        }
       }
-    }).addTo(map);
-
-    // (Optional) Add a translucent gray overlay layer for shadow effect.
-    L.geoJSON(trailPolygon, {
-      style: {
-        color: 'gray',
-        fillColor: 'gray',
-        fillOpacity: 0.3,
-        weight: 0
-      }
-    }).addTo(map);
+    })();
   </script>
+
 </body>
 </html>

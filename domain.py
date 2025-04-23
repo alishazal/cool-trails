@@ -25,34 +25,16 @@ def get_trail_info(trail_id):
             except Exception as e:
                 print("Error computing centroid:", e)
 
-def search_trails(q):
+def search_trails(q, page, limit):
     with database.engine.connect() as conn:
-        query = text("SELECT * FROM trails WHERE name LIKE :q")
-        result = conn.execute(query, {"q": f"%{q}%"})
+        offset = (page - 1) * limit
+        query = text('''
+            SELECT *
+            FROM trails
+            WHERE name LIKE :q
+            LIMIT :limit
+            OFFSET :offset
+        ''')
+        result = conn.execute(query, {"q": f"%{q}%", "limit": int(limit), "offset": int(offset)})
         trails = [dict(row) for row in result]
         return trails
-
-def add_test_trail(name, location, description):
-    db = database.SessionLocal()
-    try:
-        test_polygon = (
-            '{"type": "Polygon", "coordinates": [['
-            '[-122.42, 37.78], '
-            '[-122.41, 37.78], '
-            '[-122.41, 37.77], '
-            '[-122.42, 37.77], '
-            '[-122.42, 37.78]'
-            ']]}'
-        )
-        new_trail = models.Trail(
-            name=name,
-            location=location,
-            description=description,
-            polygon=test_polygon
-        )
-        db.add(new_trail)
-        db.commit()
-        db.refresh(new_trail)
-        return new_trail
-    finally:
-        db.close()
