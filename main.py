@@ -39,17 +39,17 @@ def home():
 @app.get("/search", response_class=HTMLResponse)
 def search(q: str = "", page: int = 1, limit: int = 10):
     trails = domain.search_trails(q, page, limit)
-    context = {"trails": trails}
+    context = {"trails": trails, "q": q}
     html_content = render_template("search.hbs", context)
     return HTMLResponse(content=html_content)
 
 # Trail info page: loads details via SQL and renders trail.hbs
 @app.get("/trail/{trail_id}", response_class=HTMLResponse)
-def trail_detail(trail_id: int):
+def trail_detail(trail_id: int, q: str = None):
     trail_dict, center = domain.get_trail_info(trail_id)
     if not trail_dict:
         raise HTTPException(status_code=404, detail="Trail not found")
-    context = {"trail": trail_dict, "center": center}
+    context = {"trail": trail_dict, "center": center, "q": q}
     html_content = render_template("trail.hbs", context)
     return HTMLResponse(content=html_content)
 

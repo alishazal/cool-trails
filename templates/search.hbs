@@ -13,9 +13,11 @@
     {{#if trails}}
       <div class="list-group">
         {{#each trails}}
-          <a href="/trail/{{id}}" class="list-group-item list-group-item-action">
+          <a href="/trail/{{id}}?q={{../q}}" class="list-group-item list-group-item-action"> 
             <h5>{{name}}</h5>
-            <p>{{description}}</p>
+            <p> placeholder description
+              {{!description}}
+            </p>
           </a>
         {{/each}}
       </div>
