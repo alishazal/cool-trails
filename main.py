@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from pybars import Compiler
 
 from services.osm import fetch_trails, fetch_canopy
-import models, database, domain
+import models, database, domain, llm
 
 app = FastAPI()
 
@@ -52,6 +52,19 @@ def trail_detail(trail_id: int, q: str = None):
     context = {"trail": trail_dict, "center": center, "q": q}
     html_content = render_template("trail.hbs", context)
     return HTMLResponse(content=html_content)
+
+# Trail info page: loads details via SQL and renders trail.hbs
+@app.get("/trail/{trail_id}/packing_recs", response_class=HTMLResponse)
+def packing_recs():
+    res = llm.print_test()
+    return JSONResponse(content=res)
+
+    # trail_dict, center = domain.get_trail_info(trail_id)
+    # if not trail_dict:
+    #     raise HTTPException(status_code=404, detail="Trail not found")
+    # context = {"trail": trail_dict, "center": center, "q": q}
+    # html_content = render_template("trail.hbs", context)
+    # return HTMLResponse(content=html_content)
 
 @app.get("/trails/osm")
 def api_trails(bbox: str):

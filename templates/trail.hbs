@@ -23,9 +23,13 @@
     <!-- Map container -->
     <div id="map"></div>
 
+    <!-- packing list container -->
+    <div id="packingListContainer"></div>
+
     <!-- Start trail button -->
     <button class="btn btn-success mt-3">Start Trail</button>
     <a href="/search?q={{q}}" class="btn btn-secondary mt-3">Back to Search</a>
+    <button id="getPackingRecs" class="btn btn-secondary mt-3">Get Packing Recs</button>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -35,6 +39,108 @@
   <script src="https://unpkg.com/leaflet-pip@1.1.0/leaflet-pip.min.js"></script>
 
   <script>
+    async function getCurrentWeather(latitude, longitude) {
+      const apiKey = 'e2cbf625af2a1df89cf399dcf091d050'; // Replace with your actual API key
+      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`; // You can change 'metric' to 'imperial' for Fahrenheit
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+      } catch (error) {
+        console.error('Could not fetch weather data:', error);
+        return null;
+      }
+    }
+
+    async function getPackingRecs() {
+      var lat = {{trail.center_lat}}; // Assuming these values are correctly injected
+      var lon = {{trail.center_lng}};
+
+      try {
+        const weatherData = await getCurrentWeather(lat, lon);
+
+        var weather_info = "";
+        if (weatherData) {
+          weather_info +=
+            `Description: ${weatherData.weather[0].description}\n` +
+            `Temperature: ${weatherData.main.temp}°C\n` +
+            `Feels like: ${weatherData.main.feels_like}°C\n` +
+            `Humidity: ${weatherData.main.humidity}%\n` +
+            `Wind Speed: ${weatherData.wind.speed} m/s`;
+        }
+
+        var extra_info = weather_info
+        const llm_input = 'Provide packing recommendations for the following trail: {{trail.name}}, given the following information:\n'
+                          + extra_info
+        
+        console.log('LLM Input:', llm_input);
+
+      } catch (error) {
+        console.error('Error in getPackingRecs:', error);
+      }
+    }
+
+    getPackingRecs();
+
+
+    const getPackingRecsButton = document.getElementById('getPackingRecs');
+
+    getPackingRecsButton.addEventListener('click', async () => {
+        try {
+            const response = await fetch("http://localhost:8000/trail/{{trail.id}}/packing_recs"); // Adjust URL if your FastAPI server is on a different port/host
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log("Data from backend:", data); // Print the received data to the browser's console
+
+            const packingList = {
+              "t-shirts": "3 items",
+              "pants": "2 items",
+              "socks": "5 pairs",
+              "underwear": "5 pairs",
+              "jacket": "1 item",
+              "raincoat": "1 item",
+              "backpack": "1 item"
+            };
+
+
+            display_packing_recs(packingList)
+        } catch (error) {
+            console.error("Error fetching trail information:", error);
+        }
+    });
+
+    function display_packing_recs(packingList) {
+      const container = document.getElementById('packingListContainer');
+      for (const itemName in packingList) {
+        if (packingList.hasOwnProperty(itemName)) {
+          const itemDiv = document.createElement('div');
+          itemDiv.classList.add('packing-item');
+
+          const nameSpan = document.createElement('span');
+          nameSpan.classList.add('item-name');
+          nameSpan.textContent = itemName + ': ';
+
+          const quantitySpan = document.createElement('span');
+          quantitySpan.classList.add('item-quantity');
+          quantitySpan.textContent = packingList[itemName];
+
+          itemDiv.appendChild(nameSpan);
+          itemDiv.appendChild(quantitySpan);
+          container.appendChild(itemDiv);
+        }
+      }
+    }
+
+
+
+
     /* ---------- helpers ---------- */
     function sunVector(lat, lng, date = new Date()) {
       const pos = SunCalc.getPosition(date, lat, lng);

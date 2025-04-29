@@ -63,6 +63,10 @@ def get_completion(prompt):
 def get_response_json(completion):
     return json.loads(completion.choices[0].message.content)
 
-completion = get_completion("Give me 3 items to pack for Canada during the winter")
-print(get_response_json(completion))
+def print_test():
+    print('hello check')
+    return {"message": "This is the result from the backend!"}
+
+# completion = get_completion("Give me 3 items to pack for Canada during the winter")
+# print(get_response_json(completion))
 
