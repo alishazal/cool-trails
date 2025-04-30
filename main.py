@@ -6,6 +6,7 @@ from pybars import Compiler
 
 from services.osm import fetch_trails, fetch_canopy
 import models, database, domain, llm
+from domain import get_hardcoded_reviews_for_trail, get_trail_info
 
 app = FastAPI()
 
@@ -46,10 +47,19 @@ def search(q: str = "", page: int = 1, limit: int = 10):
 # Trail info page: loads details via SQL and renders trail.hbs
 @app.get("/trail/{trail_id}", response_class=HTMLResponse)
 def trail_detail(trail_id: int, q: str = None):
-    trail_dict, center = domain.get_trail_info(trail_id)
+    trail_dict, center = get_trail_info(trail_id)
     if not trail_dict:
         raise HTTPException(status_code=404, detail="Trail not found")
-    context = {"trail": trail_dict, "center": center, "q": q}
+
+    trail_name = trail_dict.get("name", "this trail")
+    reviews = get_hardcoded_reviews_for_trail(trail_id, trail_name)
+
+    context = {
+        "trail": trail_dict,
+        "center": center,
+        "reviews": reviews,
+        "q": q,
+    }
     html_content = render_template("trail.hbs", context)
     return HTMLResponse(content=html_content)
 

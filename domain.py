@@ -38,3 +38,33 @@ def search_trails(q, page, limit):
         result = conn.execute(query, {"q": f"%{q}%", "limit": int(limit), "offset": int(offset)})
         trails = [dict(row) for row in result]
         return trails
+
+def get_hardcoded_reviews_for_trail(trail_id, trail_name="this trail"):
+    return [
+        {
+            "user_name": "Franco",
+            "stars": "⭐⭐⭐⭐⭐",
+            "description": f"I loved the views at {trail_name}! Definitely going again"
+        },
+        {
+            "user_name": "Ali",
+            "stars": "⭐⭐⭐",
+            "description": f"{trail_name} was great, but it got a bit crowded around noon."
+        },
+        {
+            "user_name": "Brevin",
+            "stars": "⭐⭐⭐⭐",
+            "description": f"Beautiful trail with a lot, of shade!"
+        },
+        {
+            "user_name": "Truong",
+            "stars": "⭐⭐⭐⭐⭐",
+            "description": f"This was the best trail I've ever done! Absolutely would recommend!"
+        },
+        {
+            "user_name": "Rob",
+            "stars": "⭐⭐",
+            "description": f"Nice path through {trail_name}. Could use more shade."
+        }
+    ]
+
