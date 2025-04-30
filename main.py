@@ -69,8 +69,11 @@ def trail_detail(trail_id: int, q: str = None):
     trail_name = trail_dict.get("name", "this trail")
     reviews = get_hardcoded_reviews_for_trail(trail_id, trail_name)
 
+    trail_info = parse_description(trail_dict.get("description", ""))
+
     context = {
         "trail": trail_dict,
+        "trail_info": trail_info,
         "center": center,
         "reviews": reviews,
         "q": q,
@@ -104,3 +107,11 @@ def api_trails(bbox: str):
     GET /canopy/osm?bbox=34.1,-118.3,34.3,-118.1
     """
     return JSONResponse(fetch_canopy(bbox))
+
+def parse_description(description_str):
+    pairs = description_str.split(";")
+    return {
+        key.strip(): value.strip()
+        for pair in pairs if "=" in pair
+        for key, value in [pair.split("=", 1)]
+    }
