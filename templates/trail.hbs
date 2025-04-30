@@ -74,7 +74,7 @@
       }
     }
 
-    async function getPackingRecs() {
+    async function getPackingRecsInput() {
       var lat = {{trail.center_lat}}; // Assuming these values are correctly injected
       var lon = {{trail.center_lng}};
 
@@ -102,31 +102,21 @@
       }
     }
 
-    getPackingRecs();
+    getPackingRecsInput();
 
 
     const getPackingRecsButton = document.getElementById('getPackingRecs');
 
     getPackingRecsButton.addEventListener('click', async () => {
         try {
-            const response = await fetch("http://localhost:8000/trail/{{trail.id}}/packing_recs"); // Adjust URL if your FastAPI server is on a different port/host
+            const llm_input = getPackingRecsInput
+            const response = await fetch(`http://localhost:8000/trail/{{trail.id}}/packing_recs?llm_input=${encodeURIComponent(llm_input)}`); // Adjust URL if your FastAPI server is on a different port/host
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            console.log("Data from backend:", data); // Print the received data to the browser's console
-
-            const packingList = {
-              "t-shirts": "3 items",
-              "pants": "2 items",
-              "socks": "5 pairs",
-              "underwear": "5 pairs",
-              "jacket": "1 item",
-              "raincoat": "1 item",
-              "backpack": "1 item"
-            };
-
+            const packingList = data['packing_recommendations']
 
             display_packing_recs(packingList)
         } catch (error) {
@@ -136,21 +126,26 @@
 
     function display_packing_recs(packingList) {
       const container = document.getElementById('packingListContainer');
-      for (const itemName in packingList) {
-        if (packingList.hasOwnProperty(itemName)) {
-          const itemDiv = document.createElement('div');
-          itemDiv.classList.add('packing-item');
 
-          const nameSpan = document.createElement('span');
-          nameSpan.classList.add('item-name');
-          nameSpan.textContent = itemName + ': ';
+      if (container) {
+        container.innerHTML = ''
+      }
 
-          const quantitySpan = document.createElement('span');
-          quantitySpan.classList.add('item-quantity');
-          quantitySpan.textContent = packingList[itemName];
 
-          itemDiv.appendChild(nameSpan);
-          itemDiv.appendChild(quantitySpan);
+      for (let i = 0; i < packingList.length; i++) {
+        item = packingList[i]
+        const itemDiv = document.createElement('div');
+        itemDiv.classList.add('packing-item');
+        
+        for (const property in item) {
+          
+          if (item.hasOwnProperty(property)) {
+            const span = document.createElement('span');
+            span.classList.add(property);
+            span.textContent = item[property] + ': ';
+            itemDiv.appendChild(span);
+          }
+
           container.appendChild(itemDiv);
         }
       }

@@ -1,7 +1,7 @@
 from openai import OpenAI
 import json
 
-api_key = "insert API key here"
+api_key = "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"
 
 client = OpenAI(api_key=api_key)
 
@@ -63,9 +63,14 @@ def get_completion(prompt):
 def get_response_json(completion):
     return json.loads(completion.choices[0].message.content)
 
-def print_test():
+def get_completion_json(llm_input):
+    completion = get_completion(llm_input)
+    json = get_response_json(completion)
+    return json
+
+def print_test(message):
     print('hello check')
-    return {"message": "This is the result from the backend!"}
+    return {"message": message}
 
 # completion = get_completion("Give me 3 items to pack for Canada during the winter")
 # print(get_response_json(completion))

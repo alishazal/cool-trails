@@ -11,6 +11,7 @@ from domain import get_hardcoded_reviews_for_trail, get_trail_info
 
 app = FastAPI()
 
+
 origins = [
     "http://127.0.0.1:8000",  # Allow requests from your frontend's origin
     "http://localhost:8000",  # If your frontend might also run on localhost
@@ -80,16 +81,9 @@ def trail_detail(trail_id: int, q: str = None):
 
 # Trail info page: loads details via SQL and renders trail.hbs
 @app.get("/trail/{trail_id}/packing_recs", response_class=HTMLResponse)
-def packing_recs():
-    res = llm.print_test()
-    return JSONResponse(content=res)
-
-    # trail_dict, center = domain.get_trail_info(trail_id)
-    # if not trail_dict:
-    #     raise HTTPException(status_code=404, detail="Trail not found")
-    # context = {"trail": trail_dict, "center": center, "q": q}
-    # html_content = render_template("trail.hbs", context)
-    # return HTMLResponse(content=html_content)
+def packing_recs(llm_input: str):
+    resp_json = llm.get_completion_json(llm_input)
+    return JSONResponse(content=resp_json)
 
 @app.get("/trails/osm")
 def api_trails(bbox: str):
