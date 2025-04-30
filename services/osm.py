@@ -1,6 +1,7 @@
 # services/osm.py
 import overpy, shapely.geometry as geom
 import shapely.ops as ops
+from decimal import Decimal
 
 api = overpy.Overpass(max_retry_count=3)
 
@@ -42,7 +43,10 @@ def fetch_canopy(bbox: str):
     r = api.query(q)
     feats = []
     for w in r.ways:
-        coords = [(n.lon, n.lat) for n in w.nodes]
+        coords = [
+            (float(n.lon), float(n.lat)) 
+            for n in w.nodes
+        ]
         feats.append({
             "type": "Feature",
             "geometry": {"type": "Polygon", "coordinates": [coords]},
