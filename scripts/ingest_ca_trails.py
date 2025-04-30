@@ -11,7 +11,7 @@ class TrailHandler(osmium.SimpleHandler):
         self.counter = 0
 
     def way(self, w):
-        if not (HIGHWAY_RE.search(w.tags.get("highway", "")) or
+        if not (HIGHWAY_RE.search(w.tags.get("", "")) or
                 ROUTE_RE.search(w.tags.get("route", ""))):
             return
 
