@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pybars import Compiler
 
 from services.osm import fetch_trails, fetch_canopy
@@ -9,6 +10,20 @@ import models, database, domain, llm
 from domain import get_hardcoded_reviews_for_trail, get_trail_info
 
 app = FastAPI()
+
+origins = [
+    "http://127.0.0.1:8000",  # Allow requests from your frontend's origin
+    "http://localhost:8000",  # If your frontend might also run on localhost
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],  # Allows all request headers
+)
+
 
 # Create DB tables if they don't exist
 models.Base.metadata.create_all(bind=database.engine)
