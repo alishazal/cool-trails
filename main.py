@@ -73,6 +73,9 @@ def search(
     page: int = 1,
     limit: int = 10
 ):
+    userlat = float(userlat) if userlat is not None and userlat else userlat
+    userlng = float(userlng) if userlng is not None and userlng else userlng
+    
     trails = domain.search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng, radius, page, limit)
     has_prev  = page > 1
     has_next  = len(trails) == limit

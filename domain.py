@@ -26,6 +26,12 @@ def get_trail_info(trail_id):
             except Exception as e:
                 print("Error computing centroid:", e)
 
+def bbox_from_radius(lat, lng, radius_m):
+    # 1° of lat ~111 km; lon shrinks by cos(lat)
+    dlat = radius_m / 111_000
+    dlon = radius_m / (111_000 * cos(radians(lat)))
+    return lat - dlat, lat + dlat, lng - dlon, lng + dlon
+
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371000  # Earth radius in metres
     φ1, φ2 = radians(lat1), radians(lat2)
@@ -36,34 +42,56 @@ def haversine(lat1, lon1, lat2, lon2):
     return R * c
 
 def search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng, radius, page, limit):
+    clauses = []
+    params  = { "limit": limit, "offset": (page-1) * limit }
+    
+    # 1) Full-text search on name+description
+    if q:
+        # prefix matching: q* 
+        clauses.append("trails_fts MATCH :q || '*'")
+        params["q"] = q
+
+    # 2) Difficulty filter
+    if diff:
+        clauses.append("t.difficulty IN :diff")
+        params["diff"] = diff  # e.g. ['easy','moderate']
+
+    # 3) Length
+    clauses.append("t.length_m BETWEEN :min_len AND :maxlen")
+    params["min_len"], params["maxlen"] = min_len, maxlen
+
+    # 4) Geographic bbox
+    if userlat is not None and userlat and userlng is not None and userlng and radius:
+        min_lat, max_lat, min_lng, max_lng = bbox_from_radius(userlat, userlng, radius)
+        clauses.append("t.center_lat BETWEEN :min_lat AND :max_lat")
+        clauses.append("t.center_lng BETWEEN :min_lng AND :max_lng")
+        params.update(min_lat=min_lat, max_lat=max_lat, min_lng=min_lng, max_lng=max_lng)
+
+    where = " AND ".join(clauses) or "1"
+
+    sql = f"""
+    SELECT 
+      t.*,
+      bm25(trails_fts) AS rank_score
+    FROM trails t
+    JOIN trails_fts 
+      ON trails_fts.rowid = t.id
+    WHERE {where}
+    ORDER BY
+      -- first by text relevance (ascending bm25), then by distance if provided
+      rank_score ASC
+      {", ( (t.center_lat-:ulat)*(t.center_lat-:ulat) + (t.center_lng-:ulng)*(t.center_lng-:ulng) ) ASC"
+       if userlat and userlng else ""}
+    LIMIT :limit
+    OFFSET :offset;
+    """
+    # if ordering by distance was injected, also bind ulat/ulng
+    if userlat is not None and userlng is not None:
+        params["ulat"], params["ulng"] = userlat, userlng
+
     with database.engine.connect() as conn:
-        offset = (page - 1) * limit
-        query = text('''
-            SELECT *
-            FROM trails
-            WHERE name LIKE :q
-                AND ((length_m IS NULL) OR (length_m BETWEEN :min_len AND :maxlen))
-                {difficulty_clause}
-            LIMIT :limit
-            OFFSET :offset
-        '''.format(
-            difficulty_clause = "AND difficulty IN :diff" if diff else "",
-        ))
-        result = conn.execute(query, {
-            "q": f"%{q}%",
-            "diff": diff,
-            "min_len": min_len,
-            "maxlen": maxlen,
-            "limit": int(limit),
-            "offset": int(offset)
-        })
-        trails = [dict(row) for row in result]
-        if userlat and userlng and radius:
-            trails = [
-                t for t in trails
-                if haversine(t["center_lat"], t["center_lng"], userlat, userlng) <= radius
-            ]
-        return trails
+        result = conn.execute(text(sql), params)
+        return [dict(r) for r in result]
 
 def get_hardcoded_reviews_for_trail(trail_id, trail_name="this trail"):
     return [
