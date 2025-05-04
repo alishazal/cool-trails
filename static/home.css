@@ -1,0 +1,152 @@
+
+body {
+    background-color: #a2b8a1;
+    color: #333;
+    font-family: sans-serif;
+}
+
+.container.mt-4 {
+    background-color: transparent;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+}
+
+h1 {
+    color: #e0e8b0;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: bold;
+}
+
+h1::before {
+    content: '\2744\FE0F';
+    margin-right: 0.5em;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.filter-sidebar {
+    position: fixed;
+    top: 0;
+    right: -300px;
+    width: 300px;
+    height: 100%;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0,0,0,0.1);
+    transition: right 0.3s ease-in-out;
+    z-index: 1050;
+    overflow-y: auto;
+}
+
+.filter-sidebar.open {
+    right: 0;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0s linear 0.3s;
+    z-index: 1040;
+}
+
+.overlay.show {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.filter-sidebar .btn-close {
+    margin: -10px -10px 10px auto;
+    display: block;
+}
+
+.filter-sidebar h4 {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+.filter-section {
+    margin-bottom: 1.5rem;
+}
+
+.filter-section h5 {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.slider-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.filter-footer {
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.filter-footer .btn {
+    width: auto;
+}
+
+.home-wrapper{
+    max-width: 420px;         /* perfect for phones, still OK on desktop */
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  /* Use the same hue for ❄️ icon + title */
+  h1{
+    font-size: 2.3rem;
+    font-weight:700;
+    color:#e0e8b0;            /* keep your existing colour */
+  }
+  
+  /* --- search field visual tweaks --- */
+  .search-input{
+    height: 44px;
+    padding-left: 42px;       /* leave room for 🔍 icon */
+    border-radius: 8px;
+  }
+  
+  /* magnifier before input */
+  .search-input::placeholder{color:#6c757d;}
+  .position-relative::before{
+    content:'\1F50D';         /* 🔍 */
+    position:absolute; left:14px; top:50%;
+    transform:translateY(-50%);
+    font-size:1rem; color:#6c757d;
+    pointer-events:none;
+  }
+  
+  /* --- floating Filter button inside search box --- */
+  .filter-fab{
+    position:absolute; right:4px; top:4px; bottom:4px;
+    padding:0 12px;
+    border-radius:8px;
+    font-size:.9rem;
+  }
+  
+  /* ensure sidebar width matches button spacing on very small screens */
+  @media(max-width:360px){
+    .filter-sidebar{width:260px}
+  }
+  

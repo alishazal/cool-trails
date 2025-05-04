@@ -1,0 +1,17 @@
+.list-group-item {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    transition: box-shadow 0.2s ease;
+}
+
+.list-group-item:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+.list-group-item h5 {
+    color: #2d3436;
+    font-weight: 600;
+}

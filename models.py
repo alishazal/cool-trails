@@ -9,6 +9,10 @@ class Trail(Base):
     name = Column(String, index=True)
     location = Column(String, index=True)
     description = Column(String, index=True)
+
     polygon = Column(Text)
     center_lat = Column(Float)
     center_lng = Column(Float)
+
+    difficulty = Column(String(15))
+    length_m = Column(Float)

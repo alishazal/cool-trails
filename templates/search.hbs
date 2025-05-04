@@ -2,30 +2,224 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Cool Trails - Search Results</title>
+  <title>Cool Trails – Search Results</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="/static/home.css">
 </head>
 <body>
-  <div class="container mt-4">
-    <h1>Search Results</h1>
+  <div class="home-wrapper my-4 d-flex flex-column align-items-center px-3">
+
+    <!-- ==== Search + Filter Form ==== -->
+    <form id="searchForm" action="/search" method="get" class="mb-4">
+      <div class="input-group">
+        <!-- Search input -->
+        <input
+          type="search"
+          name="q"
+          value="{{q}}"
+          class="form-control"
+          placeholder="Search trails"
+          aria-label="Search">
+
+        <!-- Search button: clears filters first -->
+        <button
+          class="btn btn-outline-success"
+          type="submit"
+          onclick="clearFilterInputsForSearch()">
+          Search
+        </button>
+
+        <!-- Opens filter panel without submitting -->
+        <button
+          class="btn btn-outline-secondary"
+          type="button"
+          onclick="openFilter()">
+          Filters
+        </button>
+      </div>
+
+      <!-- Always-sent fields -->
+      
+      <input type="hidden" name="page"    value="{{page}}">
+      <input type="hidden" name="limit"   value="{{limit}}">
+
+      <!-- Filter fields (will be removed by clearFilterInputsForSearch on Search) -->
+      <input type="hidden" name="userlat" id="userlat" value="{{userlat}}">
+      <input type="hidden" name="userlng" id="userlng" value="{{userlng}}">
+      <input type="hidden" name="maxlen" id="maxlen"  value="{{maxlen}}">
+      <input type="hidden" name="radius"  id="radius"  value="{{radius}}">
+
+    <!-- Overlay & Sidebar -->
+    <div id="overlay" class="overlay" onclick="closeFilter()"></div>
+    <div id="filterSidebar" class="filter-sidebar">
+      <button class="btn-close float-end" onclick="closeFilter()"></button>
+      <h4 class="mt-4 mb-3">Filters</h4>
+
+        <!-- Shading -->
+        <div class="filter-section">
+        <h5>Shading</h5>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" name="shade" id="shade25" value="25" {{#ifIn 25 ../shade }}checked{{/ifIn}}>
+          <label class="form-check-label" for="shade25">25%</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" name="shade" id="shade50" value="50" {{#ifIn 50 ../shade }}checked{{/ifIn}}>
+          <label class="form-check-label" for="shade50">50%</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="checkbox" name="shade" id="shade75" value="75" {{#ifIn 75 ../shade }}checked{{/ifIn}}>
+          <label class="form-check-label" for="shade75">75%</label>
+        </div>
+      </div>
+
+      <!-- Difficulty -->
+      <div class="filter-section">
+        <h5>Difficulty</h5>
+        <div class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="diff" id="diff-easy" value="easy" {{#ifIn "easy" ../diff }}checked{{/ifIn}}>
+          <label class="form-check-label" for="diff-easy">Easy</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="diff" id="diff-medium" value="medium" {{#ifIn "medium" ../diff }}checked{{/ifIn}}>
+          <label class="form-check-label" for="diff-medium">Medium</label>
+        </div>
+        <div class="form-check-inline">
+          <input class="form-check-input" type="checkbox" name="diff" id="diff-hard" value="hard" {{#ifIn "hard" ../diff }}checked{{/ifIn}}>
+          <label class="form-check-label" for="diff-hard">Hard</label>
+        </div>
+      </div>
+
+      <!-- Length slider -->
+      <div class="filter-section mb-4">
+        <h5>Max Length (mi)</h5>
+        <div class="slider-label"><span>0</span><span>25+</span></div>
+        <input type="range" class="form-range"
+               min="0" max="25" value="5" id="lengthRange"
+               oninput="handleSlider(this,'maxlen','lenOut',1609.34)">
+        <div class="text-end fw-semibold">
+          <span id="lenOut">5</span> mi
+        </div>
+      </div>
+
+      <!-- Distance slider -->
+      <div class="filter-section mb-4">
+        <h5>Within Distance (mi)</h5>
+        <div class="slider-label"><span>0</span><span>100</span></div>
+        <input type="range" class="form-range"
+               min="0" max="100" value="50" id="distanceRange"
+               oninput="handleSlider(this,'radius','distOut',1609.34)">
+        <div class="text-end fw-semibold">
+          <span id="distOut">50</span> mi
+        </div>
+      </div>
+
+      <!-- Apply & Clear -->
+      <div class="d-flex justify-content-between">
+        <a href="/search?q={{q}}" class="text-success">Clear</a>
+        <!-- Apply sends the filters along -->
+        <button class="btn btn-success" type="submit">Apply</button>
+      </div>
+    </div>
+    </form>
+
+    <!-- ==== Results List ==== -->
+    <hr>
+    <h2 class="w-100">Results for “{{q}}”</h2>
+
     {{#if trails}}
-      <div class="list-group">
+      <div class="list-group mt-3 w-100">
         {{#each trails}}
-          <a href="/trail/{{id}}?q={{../q}}" class="list-group-item list-group-item-action"> 
+          <a href="/trail/{{id}}?q={{../q}}"
+             class="list-group-item list-group-item-action">
             <h5>{{name}}</h5>
-            <p> placeholder description
-              {{!description}}
-            </p>
+            <small class="text-muted">
+              {{length_m}} m &middot; {{difficulty}}
+            </small>
           </a>
         {{/each}}
       </div>
     {{else}}
-      <p>No trails found for your query.</p>
+      <p class="text-muted mt-3 w-100">No trails found.</p>
     {{/if}}
-    <a href="/home" class="btn btn-secondary mt-3">Back to Home</a>
+
+    <!-- Pagination -->
+    <nav aria-label="Search results pages" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {{#if has_prev}}
+          <li class="page-item">
+            <a class="page-link"
+               href="/search?q={{q}}&page={{prev_page}}&limit={{limit}}"
+               aria-label="Previous">« Previous</a>
+          </li>
+        {{else}}
+          <li class="page-item disabled">
+            <span class="page-link">« Previous</span>
+          </li>
+        {{/if}}
+        <li class="page-item disabled">
+          <span class="page-link">Page {{page}}</span>
+        </li>
+        {{#if has_next}}
+          <li class="page-item">
+            <a class="page-link"
+               href="/search?q={{q}}&page={{next_page}}&limit={{limit}}"
+               aria-label="Next">Next »</a>
+          </li>
+        {{else}}
+          <li class="page-item disabled">
+            <span class="page-link">Next »</span>
+          </li>
+        {{/if}}
+      </ul>
+    </nav>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JS Helpers -->
+  <script>
+    function openFilter() {
+      overlay.classList.add('show');
+      filterSidebar.classList.add('open');
+    }
+    function closeFilter() {
+      overlay.classList.remove('show');
+      filterSidebar.classList.remove('open');
+    }
+    function handleSlider(el, hid, out, mul) {
+      document.getElementById(hid).value      = Math.round(el.value * mul);
+      document.getElementById(out).textContent = el.value;
+    }
+    function clearFilterInputsForSearch() {
+      // uncheck any diff & shade checkboxes
+      document.querySelectorAll(
+        '#filterSidebar input[name="diff"], #filterSidebar input[name="shade"]'
+      ).forEach(cb => cb.checked = false);
+
+      // remove slider names so they’re not sent on plain Search
+      document.getElementById('maxlen').removeAttribute('name');
+      document.getElementById('radius').removeAttribute('name');
+      document.getElementById('userlat').removeAttribute('name');
+      document.getElementById('userlng').removeAttribute('name');
+
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          p => {
+            userlat.value = p.coords.latitude.toFixed(6);
+            userlng.value = p.coords.longitude.toFixed(6);
+          },
+          ()=>{}, {enableHighAccuracy:true,timeout:8000}
+        );
+      }
+    });
+  </script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+  </script>
 </body>
 </html>

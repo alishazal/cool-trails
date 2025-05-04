@@ -3,11 +3,12 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Optional, List
 from pybars import Compiler
 
 from services.osm import fetch_trails, fetch_canopy
 import models, database, domain, llm
-from domain import get_hardcoded_reviews_for_trail, get_trail_info
+from domain import get_hardcoded_reviews_for_trail, get_trail_info, parse_description
 
 app = FastAPI()
 
@@ -48,15 +49,48 @@ def render_template(template_name: str, context: dict = {}) -> str:
 @app.get("/", response_class=HTMLResponse)
 @app.get("/home", response_class=HTMLResponse)
 def home():
-    context = {"message": "Welcome to the Cool Trails!"}
+    context = {
+        "message": "Cool Trails",
+        "shades": [25, 50, 75, 100],
+        "difficulties": ["easy", "moderate", "hard"],
+    }
     html_content = render_template("home.hbs", context)
     return HTMLResponse(content=html_content)
 
 # Search page: runs a SQL query and renders search.hbs
 @app.get("/search", response_class=HTMLResponse)
-def search(q: str = "", page: int = 1, limit: int = 10):
-    trails = domain.search_trails(q, page, limit)
-    context = {"trails": trails, "q": q}
+def search(
+    q: str = "",
+    diff: Optional[List[str]] = [],
+    shade: Optional[List[int]] = [],
+    min_len: Optional[float] = 0,
+    maxlen: Optional[float] = 1e9,
+    min_gain: Optional[float] = 0,
+    max_gain: Optional[float] = 1e9,
+    userlat: Optional[str] = None,
+    userlng: Optional[str] = None,
+    radius: Optional[float] = 1e9,
+    page: int = 1,
+    limit: int = 10
+):
+    trails = domain.search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng, radius, page, limit)
+    has_prev  = page > 1
+    has_next  = len(trails) == limit
+    context = {
+        "trails": trails,
+        "q": q,
+        "diff": diff,
+        "userlat": userlat,
+        "userlng": userlng,
+        "maxlen": maxlen if maxlen != 1e9 else 8046.7,
+        "radius": radius if radius != 1e9 else 80467,
+        "page":      page,
+        "prev_page": page - 1,
+        "next_page": page + 1,
+        "has_prev":  has_prev,
+        "has_next":  has_next,
+        "limit":     limit,
+    }
     html_content = render_template("search.hbs", context)
     return HTMLResponse(content=html_content)
 
@@ -101,11 +135,3 @@ def api_trails(bbox: str):
     GET /canopy/osm?bbox=34.1,-118.3,34.3,-118.1
     """
     return JSONResponse(fetch_canopy(bbox))
-
-def parse_description(description_str):
-    pairs = description_str.split(";")
-    return {
-        key.strip(): value.strip()
-        for pair in pairs if "=" in pair
-        for key, value in [pair.split("=", 1)]
-    }
