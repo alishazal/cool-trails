@@ -16,7 +16,7 @@
 </head>
 <body>
   <div class="container mt-4">
-    <h1>{{trail.name}}</h1>
+    <h1 class="d-flex flex-column align-items-center pt-2">{{trail.name}}</h1>
     <div class="alert alert-info d-flex align-items-center gap-2 py-2 px-3 mb-3">
       <span class="fw-bold">📍 Location:</span>
       <span class="text-muted">{{trail.location}}</span>
@@ -30,6 +30,11 @@
           <span class="visually-hidden">Calculating shading…</span>
         </div>
         <span class="ms-2">Calculating shade…</span>
+      </div>
+      <div class="d-flex gap-4 mb-2">
+        <div><span class="badge bg-primary text-dark">&nbsp;&nbsp;</span> Route</div>
+        <div><span class="badge bg-success">&nbsp;&nbsp;</span> Shaded</div>
+        <div><span class="badge orange-badge text-dark">&nbsp;&nbsp;</span> Not shaded</div>
       </div>
       <div id="map"></div>
     </div>

@@ -183,3 +183,7 @@ vertical-align: text-bottom;
 }
 
 .leaflet-container { z-index: 0; }
+
+.orange-badge {
+    background-color: #FFA726;
+}
