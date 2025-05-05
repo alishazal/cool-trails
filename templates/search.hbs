@@ -9,6 +9,8 @@
     rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css">
   <link rel="stylesheet" href="/static/home.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
   <div class="home-wrapper my-4 d-flex flex-column align-items-center px-3">
@@ -143,11 +145,21 @@
       <div class="list-group mt-3 w-100">
         {{#each trails}}
           <a href="/trail/{{id}}?q={{../q}}"
-             class="list-group-item list-group-item-action">
-            <h5>{{name}}</h5>
-            <small class="text-muted">
-              {{length_m}} m &middot; {{difficulty}}
-            </small>
+            class="list-group-item list-group-item-action">
+            <div class="d-flex align-items-start">
+              <div class="flex-grow-1">
+                <h5>{{name}}</h5>
+                <p class="text-muted mb-1">{{length_m}} m</p>
+                <span class="badge {{badge_class}}">{{difficulty}}</span>
+              </div>
+              <!-- mini‐map placeholder -->
+              <div class="mini-map"
+                  id="mini-map-{{id}}"
+                  data-lat="{{center_lat}}"
+                  data-lng="{{center_lng}}"
+                  class="mini-map border border-secondary rounded overflow-hidden">
+              </div>
+            </div>
           </a>
         {{/each}}
       </div>
@@ -161,8 +173,12 @@
         {{#if has_prev}}
           <li class="page-item">
             <a class="page-link"
-               href="/search?q={{q}}&page={{prev_page}}&limit={{limit}}"
-               aria-label="Previous">« Previous</a>
+              href="/search?q={{q}}&page={{prev_page}}&limit={{limit}}
+                {{#each diff}}&diff={{this}}{{/each}}
+                {{#each shade}}&shade={{this}}{{/each}}"
+              aria-label="Previous">
+              « Previous
+            </a>
           </li>
         {{else}}
           <li class="page-item disabled">
@@ -175,8 +191,12 @@
         {{#if has_next}}
           <li class="page-item">
             <a class="page-link"
-               href="/search?q={{q}}&page={{next_page}}&limit={{limit}}"
-               aria-label="Next">Next »</a>
+              href="/search?q={{q}}&page={{next_page}}&limit={{limit}}
+                {{#each diff}}&diff={{this}}{{/each}}
+                {{#each shade}}&shade={{this}}{{/each}}"
+              aria-label="Next">
+              Next »
+            </a>
           </li>
         {{else}}
           <li class="page-item disabled">
@@ -285,6 +305,32 @@
 
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      document.querySelectorAll('.mini-map').forEach(el=>{
+        const lat = parseFloat(el.dataset.lat),
+              lng = parseFloat(el.dataset.lng);
+        // create map
+        const map = L.map(el, {
+          attributionControl: false,
+          zoomControl: false,
+          dragging: false,
+          scrollWheelZoom: false,
+          doubleClickZoom: false,
+          boxZoom: false,
+          keyboard: false,
+        }).setView([lat, lng], 11);
+        // add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          maxZoom: 18
+        }).addTo(map);
+        // marker in the center
+        L.marker([lat,lng]).addTo(map);
+        // disable interactive cursors
+        map.getContainer().style.cursor = 'default';
+      });
+    });
   </script>
 </body>
 </html>

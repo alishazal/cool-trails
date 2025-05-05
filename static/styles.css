@@ -154,3 +154,23 @@ input[type="search"]::-webkit-search-cancel-button {
     background-color: #e9f7ef;
     cursor: pointer;
 }
+
+.hover-shadow:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    transition: all 0.2s ease;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.small i {
+vertical-align: text-bottom;
+}
+
+.mini-map {
+    width: 100px;
+    height: 80px;
+}

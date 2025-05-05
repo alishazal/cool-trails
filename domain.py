@@ -63,7 +63,7 @@ def search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng
     # 2) Difficulty filter
     if diff:
         clauses.append("t.difficulty IN :diff")
-        params["diff"] = diff  # e.g. ['easy','moderate']
+        params["diff"] = list(diff)  # e.g. ['easy','moderate']
 
     # 3) Length
     clauses.append("t.length_m BETWEEN :min_len AND :maxlen")
@@ -147,6 +147,15 @@ def search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng
             with database.engine.connect() as conn:
                 rows2 = conn.execute(sql2, params2).fetchall()
             trails = [dict(r) for r in rows2]
+
+    for t in trails:
+        diff = t["difficulty"].lower()
+        if diff == "easy":
+            t["badge_class"] = "bg-success"
+        elif diff == "moderate":
+            t["badge_class"] = "bg-warning text-dark"
+        else:
+            t["badge_class"] = "bg-danger"
 
     return trails
 

@@ -61,8 +61,8 @@ def home():
 @app.get("/search", response_class=HTMLResponse)
 def search(
     q: str = "",
-    diff: Optional[Tuple[str]] = tuple([]),
-    shade: Optional[Tuple[int]] = tuple([]),
+    diff: Tuple[str] = Query(None),
+    shade: Tuple[int] = Query(None),
     min_len: Optional[float] = 0,
     maxlen: Optional[float] = 1e9,
     min_gain: Optional[float] = 0,
@@ -73,6 +73,8 @@ def search(
     page: int = 1,
     limit: int = 10
 ):
+    diff = tuple(diff) if diff else tuple([])
+    shade = tuple(shade) if shade else tuple([])
     userlat = float(userlat) if userlat is not None and userlat else userlat
     userlng = float(userlng) if userlng is not None and userlng else userlng
     trails = domain.search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng, radius, page, limit)

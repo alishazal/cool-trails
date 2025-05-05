@@ -68,10 +68,3 @@ def get_completion_json(llm_input):
     json = get_response_json(completion)
     return json
 
-def print_test(message):
-    print('hello check')
-    return {"message": message}
-
-# completion = get_completion("Give me 3 items to pack for Canada during the winter")
-# print(get_response_json(completion))
-
