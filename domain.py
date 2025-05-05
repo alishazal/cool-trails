@@ -62,8 +62,11 @@ def search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng
 
     # 2) Difficulty filter
     if diff:
-        clauses.append("t.difficulty IN :diff")
-        params["diff"] = list(diff)  # e.g. ['easy','moderate']
+        # build placeholders :d0, :d1, …
+        ph = ", ".join(f":d{i}" for i in range(len(diff)))
+        clauses.append(f"t.difficulty IN ({ph})")
+        for i, v in enumerate(diff):
+            params[f"d{i}"] = v
 
     # 3) Length
     clauses.append("t.length_m BETWEEN :min_len AND :maxlen")
@@ -103,7 +106,7 @@ def search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng
         trails = [dict(r) for r in result]
     
     # if FTS gave us nothing *and* the user actually typed something, do a quick fuzzy match on trail names
-    if not trails and q:
+    if not trails and q and page == 1:
         rows = get_all_trails()
         name_map = {row["name"]: row["id"] for row in rows}
 

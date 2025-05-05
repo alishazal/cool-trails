@@ -70,23 +70,6 @@
       <button class="btn-close float-end" onclick="closeFilter()"></button>
       <h4 class="mt-4 mb-3">Filters</h4>
 
-        <!-- Shading -->
-        <div class="filter-section">
-        <h5>Shading</h5>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox" name="shade" id="shade25" value="25" {{#ifIn 25 ../shade }}checked{{/ifIn}}>
-          <label class="form-check-label" for="shade25">25%</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox" name="shade" id="shade50" value="50" {{#ifIn 50 ../shade }}checked{{/ifIn}}>
-          <label class="form-check-label" for="shade50">50%</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input" type="checkbox" name="shade" id="shade75" value="75" {{#ifIn 75 ../shade }}checked{{/ifIn}}>
-          <label class="form-check-label" for="shade75">75%</label>
-        </div>
-      </div>
-
       <!-- Difficulty -->
       <div class="filter-section">
         <h5>Difficulty</h5>
@@ -173,9 +156,7 @@
         {{#if has_prev}}
           <li class="page-item">
             <a class="page-link"
-              href="/search?q={{q}}&page={{prev_page}}&limit={{limit}}
-                {{#each diff}}&diff={{this}}{{/each}}
-                {{#each shade}}&shade={{this}}{{/each}}"
+              href="/search?q={{q}}&page={{prev_page}}&limit={{limit}}{{#each diff}}&diff={{this}}{{/each}}"
               aria-label="Previous">
               « Previous
             </a>
@@ -191,9 +172,7 @@
         {{#if has_next}}
           <li class="page-item">
             <a class="page-link"
-              href="/search?q={{q}}&page={{next_page}}&limit={{limit}}
-                {{#each diff}}&diff={{this}}{{/each}}
-                {{#each shade}}&shade={{this}}{{/each}}"
+              href="/search?q={{q}}&page={{next_page}}&limit={{limit}}{{#each diff}}&diff={{this}}{{/each}}"
               aria-label="Next">
               Next »
             </a>
@@ -222,9 +201,9 @@
       document.getElementById(out).textContent = el.value;
     }
     function clearFilterInputsForSearch() {
-      // uncheck any diff & shade checkboxes
+      // uncheck any diff checkboxes
       document.querySelectorAll(
-        '#filterSidebar input[name="diff"], #filterSidebar input[name="shade"]'
+        '#filterSidebar input[name="diff"]'
       ).forEach(cb => cb.checked = false);
 
       // remove slider names so they’re not sent on plain Search

@@ -61,8 +61,8 @@ def home():
 @app.get("/search", response_class=HTMLResponse)
 def search(
     q: str = "",
-    diff: Tuple[str] = Query(None),
-    shade: Tuple[int] = Query(None),
+    diff: List[str] = Query(None),
+    shade: List[int] = Query(None),
     min_len: Optional[float] = 0,
     maxlen: Optional[float] = 1e9,
     min_gain: Optional[float] = 0,
