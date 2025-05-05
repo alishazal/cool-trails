@@ -1,7 +1,6 @@
 # services/osm.py
 import overpy, shapely.geometry as geom
-import shapely.ops as ops
-from decimal import Decimal
+from functools import lru_cache
 
 api = overpy.Overpass(max_retry_count=3)
 
@@ -31,6 +30,7 @@ def fetch_trails(bbox: str):
         })
     return {"type": "FeatureCollection", "features": feats}
 
+@lru_cache()
 def fetch_canopy(bbox: str):
     q = f"""
       (

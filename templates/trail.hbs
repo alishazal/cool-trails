@@ -23,7 +23,16 @@
     </div>
     
     <!-- Map container -->
-    <div id="map"></div>
+    <div class="position-relative">
+      <div id="shade-loader"
+          class="position-absolute top-50 start-50 translate-middle d-flex align-items-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Calculating shading…</span>
+        </div>
+        <span class="ms-2">Calculating shade…</span>
+      </div>
+      <div id="map"></div>
+    </div>
 
     <!-- packing list container -->
     <div id="packingListContainer"></div>
@@ -34,7 +43,7 @@
         <button class="btn btn-success w-100">Start Trail</button>
       </div>
       <div class="col-6">
-        <button id="getPackingRecs" class="btn btn-warning w-100">Get Packing Recs 🧠</button>
+        <button id="getPackingRecs" class="btn btn-warning w-100">Get Packing Recs 🤖</button>
       </div>
     </div>
 
@@ -106,189 +115,174 @@
   <!-- point-in-polygon helper -->
   <script src="https://unpkg.com/leaflet-pip@1.1.0/leaflet-pip.min.js"></script>
 
-  <script>
-    async function getCurrentWeather(latitude, longitude) {
-      const apiKey = 'e2cbf625af2a1df89cf399dcf091d050'; // Replace with your actual API key
-      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`; // You can change 'metric' to 'imperial' for Fahrenheit
+<script>
+  // ──────── Weather helper ─────────
+  async function getCurrentWeather(latitude, longitude) {
+    const apiKey = '…';
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      return await response.json();
+    } catch (err) {
+      console.error("Could not fetch weather data:", err);
+      return null;
+    }
+  }
 
-      try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data;
-      } catch (error) {
-        console.error('Could not fetch weather data:', error);
-        return null;
+  // ──────── LLM input builder ─────────
+  async function getPackingRecsInput() {
+    const lat = {{trail.center_lat}}, lon = {{trail.center_lng}};
+    try {
+      const weatherData = await getCurrentWeather(lat, lon);
+      let weather_info = "";
+      if (weatherData) {
+        weather_info +=
+          `Description: ${weatherData.weather[0].description}\n` +
+          `Temperature: ${weatherData.main.temp}°C\n` +
+          `Feels like: ${weatherData.main.feels_like}°C\n` +
+          `Humidity: ${weatherData.main.humidity}%\n` +
+          `Wind Speed: ${weatherData.wind.speed} m/s`;
       }
+      const llm_input =
+        `Provide packing recommendations for the following trail: {{trail.name}}, ` +
+        `given the following information:\n${weather_info}`;
+      console.log("LLM Input:", llm_input);
+      return llm_input;
+    } catch (err) {
+      console.error("Error in getPackingRecsInput:", err);
+      throw err;
     }
+  }
 
-    async function getPackingRecsInput() {
-      var lat = {{trail.center_lat}}; // Assuming these values are correctly injected
-      var lon = {{trail.center_lng}};
-
-      try {
-        const weatherData = await getCurrentWeather(lat, lon);
-
-        var weather_info = "";
-        if (weatherData) {
-          weather_info +=
-            `Description: ${weatherData.weather[0].description}\n` +
-            `Temperature: ${weatherData.main.temp}°C\n` +
-            `Feels like: ${weatherData.main.feels_like}°C\n` +
-            `Humidity: ${weatherData.main.humidity}%\n` +
-            `Wind Speed: ${weatherData.wind.speed} m/s`;
-        }
-
-        var extra_info = weather_info
-        const llm_input = `Provide packing recommendations for the following trail: {{trail.name}}, given the following information:\n${extra_info}`;
-        console.log('LLM Input:', llm_input);
-        return llm_input;
-      } catch (error) {
-        console.error('Error in getPackingRecs:', error);
-        throw error;
-      }
-    }
-
-    const getPackingRecsButton = document.getElementById('getPackingRecs');
-
-    getPackingRecsButton.addEventListener('click', async () => {
-        try {
-              const llm_input = await getPackingRecsInput();
-              const response = await fetch(`/trail/{{trail.id}}/packing_recs?llm_input=${encodeURIComponent(llm_input)}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            const packingList = data['packing_recommendations']
-
-            renderPackingTable(packingList);
-        } catch (error) {
-            console.error("Error fetching trail information:", error);
-        }
-    });
-
-    function renderPackingTable(items) {
-      const container = document.getElementById('packingRecsSection');
-      container.innerHTML = '';
-      if (!items || items.length === 0) return;
-
-      const rows = items.map(it => `
-        <tr>
-          <td>${it.name}</td>
-          <td>${it.quantity}</td>
-          <td>${it.explanation}</td>
-        </tr>
-      `).join('');
-
-      container.innerHTML = `
-        <div class="card mb-4">
-          <div class="card-header bg-info text-white">
-            <h5 class="mb-0">🧳 Packing Recommendations</h5>
-          </div>
-          <div class="card-body p-0">
-            <table class="table table-striped table-sm mb-0">
-              <thead class="table-light">
-                <tr><th>Item</th><th>Qty</th><th>Description</th></tr>
-              </thead>
-              <tbody>${rows}</tbody>
-            </table>
-          </div>
-        </div>
-      `;
-    }
-
-    /* ---------- helpers for calculating shade ---------- */
-    function sunVector(lat, lng, date = new Date()) {
-      const pos = SunCalc.getPosition(date, lat, lng);
-      return { az: pos.azimuth, alt: pos.altitude };   // radians
-    }
-
-    async function cloudCover(lat, lng) {
-      const url =
-        `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=cloudcover&forecast_days=1`;
-      const resp = await fetch(url);
-      const data = await resp.json();
-      const idx = data.hourly.time.indexOf(
-        new Date().toISOString().slice(0, 13) + ":00"
+  // ──────── Packing button hookup ─────────
+  const getPackingRecsButton = document.getElementById("getPackingRecs");
+  getPackingRecsButton.addEventListener("click", async () => {
+    try {
+      const llm_input = await getPackingRecsInput();
+      const resp = await fetch(
+        `/trail/{{trail.id}}/packing_recs?llm_input=${encodeURIComponent(llm_input)}`
       );
-      return data.hourly.cloudcover[idx];              // %
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const { packing_recommendations } = await resp.json();
+      renderPackingTable(packing_recommendations);
+    } catch (err) {
+      console.error("Error fetching packing recs:", err);
     }
+  });
 
-    /* ---------- initialise map ---------- */
-    const map = L.map("map").setView([0, 0], 13);      // temp view (will recalc)
+  function renderPackingTable(items) {
+    const container = document.getElementById("packingRecsSection");
+    container.innerHTML = "";
+    if (!items || items.length === 0) return;
+    const rows = items
+      .map(
+        (it) => `
+      <tr>
+        <td>${it.name}</td>
+        <td>${it.quantity}</td>
+        <td>${it.explanation}</td>
+      </tr>`
+      )
+      .join("");
+    container.innerHTML = `
+      <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">🧳 Packing Recommendations</h5>
+        </div>
+        <div class="card-body p-0">
+          <table class="table table-striped table-sm mb-0">
+            <thead class="table-light">
+              <tr><th>Item</th><th>Qty</th><th>Description</th></tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>`;
+  }
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "© OpenStreetMap contributors",
-      maxZoom: 19,
-    }).addTo(map);
+  // ──────── Shade helpers ─────────
+  function sunVector(lat, lng, date = new Date()) {
+    const pos = SunCalc.getPosition(date, lat, lng);
+    return { az: pos.azimuth, altitude: pos.altitude };
+  }
+  async function cloudCover(lat, lng) {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&hourly=cloudcover&forecast_days=1`;
+    const data = await fetch(url).then((r) => r.json());
+    const idx = data.hourly.time.indexOf(new Date().toISOString().slice(0, 13) + ":00");
+    return data.hourly.cloudcover[idx];
+  }
 
-    /* ---------- draw stored polygon ---------- */
-    const trailPolygon = {{{trail.polygon}}};
-    const polyLayer = L.geoJSON(trailPolygon, {
-      style: { color: "#0077ff", weight: 10, opacity: 0.8 },
-    }).addTo(map);
+  // ──────── Map setup ─────────
+  const map = L.map("map").setView([0, 0], 13);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors",
+    maxZoom: 19,
+  }).addTo(map);
+  const trailPolygon = {{{trail.polygon}}};
+  const polyLayer = L.geoJSON(trailPolygon, {
+    style: { color: "#0077ff", weight: 10, opacity: 0.8 },
+  }).addTo(map);
+  map.fitBounds(polyLayer.getBounds(), { padding: [20, 20] });
+  const center = map.getCenter();
 
-    // Auto-zoom to polygon if centre not supplied
-    map.fitBounds(polyLayer.getBounds(), { padding: [20, 20] });
-    const center = map.getCenter();                    // use this for API bbox
-
-    /* ---------- dynamic shade logic ---------- */
-    (async function () {
-      // 1. derive a ~500 m bbox around the map centre
-      const Δ = 0.004;                                 // ≈ ~450 m in deg
+  // ──────── Dynamic shade logic ─────────
+  (async function () {
+    const loader = document.getElementById("shade-loader");
+    loader.style.display = "flex";
+    try {
+      const Δ = 0.004;
       const bbox = `${center.lat - Δ},${center.lng - Δ},${center.lat + Δ},${center.lng + Δ}`;
-
-      // 2. fetch OSM trail segments + canopy polygons
-      const [trailFC, canopyFC] = await Promise.all([
-        fetch(`/trails/osm?bbox=${bbox}`).then((r) => r.json()),
-        fetch(`/canopy/osm?bbox=${bbox}`).then((r) => r.json()),
-      ]);
-
-      // 3. draw canopy and keep a reference for point-in-polygon tests
+      const canopyFC = await fetch(`/canopy/osm?bbox=${bbox}`).then((r) => r.json());
       const canopyLayer = L.geoJSON(canopyFC, {
         style: { color: "#228b22", fillOpacity: 0.35, weight: 5 },
       }).addTo(map);
 
-      // 4. colour trail segments green/orange
-      const shadeLayer = L.layerGroup().addTo(map);
-      const altitudeThr = 15 * Math.PI / 180;          // 15°
-      const cloudThr = 70;                             // 70 %
-
-      for (const feat of trailFC.features) {
-        const coords = feat.geometry.coordinates;
-        for (let i = 0; i < coords.length - 1; i++) {
-          const [lon1, lat1] = coords[i];
-          const [lon2, lat2] = coords[i + 1];
-          const midLat = (lat1 + lat2) / 2;
-          const midLon = (lon1 + lon2) / 2;
-
-          const sun = sunVector(midLat, midLon);
-          const cloudy = (await cloudCover(midLat, midLon)) > cloudThr;
-          const underCanopy =
-            leafletPip.pointInLayer([midLon, midLat], canopyLayer).length > 0;
-
-          const shaded =
-            cloudy ||
-            (underCanopy && sun.altitude > -0.05) ||
-            sun.altitude < altitudeThr;
-
-          L.polyline(
-            [
-              [lat1, lon1],
-              [lat2, lon2],
-            ],
-            {
-              color: shaded ? "green" : "orange",
-              weight: 10,
-              opacity: 0.9,
-            }
-          ).addTo(shadeLayer);
-        }
+      // 1) build segments
+      const segs = [];
+      const coords = trailPolygon.coordinates;
+      for (let i = 0; i < coords.length - 1; i++) {
+        const [lon1, lat1] = coords[i],
+          [lon2, lat2] = coords[i + 1];
+        segs.push({
+          lon1,
+          lat1,
+          lon2,
+          lat2,
+          midLat: (lat1 + lat2) / 2,
+          midLon: (lon1 + lon2) / 2,
+        });
       }
-    })();
-  </script>
+
+      // 2) batch cloud calls
+      const cloudValues = await Promise.all(segs.map((s) => cloudCover(s.midLat, s.midLon)));
+
+      // 3) draw all at once
+      const altitudeThr = 15 * Math.PI / 180,
+        cloudThr = 70;
+      const shadeLayer = L.layerGroup().addTo(map);
+      segs.forEach((s, i) => {
+        const sun = sunVector(s.midLat, s.midLon),
+          cloudy = cloudValues[i] > cloudThr,
+          underCanopy = leafletPip.pointInLayer([s.midLon, s.midLat], canopyLayer).length > 0,
+          tooLow = sun.altitude < altitudeThr,
+          shaded = cloudy || underCanopy || (tooLow && sun.altitude > 0);
+
+        L.polyline([[s.lat1, s.lon1], [s.lat2, s.lon2]], {
+          color: shaded ? "green" : "orange",
+          weight: 6,
+          opacity: 0.9,
+        }).addTo(shadeLayer);
+      });
+    } catch (e) {
+      console.error("Shading error:", e);
+    } finally {
+      loader.style.display = "none";
+      loader.style.zIndex = 0;
+
+    }
+  })();
+</script>
 
 </body>
 </html>
