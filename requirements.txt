@@ -9,3 +9,4 @@ overpy==0.7
 pyproj==3.6.1
 rio-cogeo==5.4.1
 osmium==3.7.0
+RapidFuzz==3.13.0

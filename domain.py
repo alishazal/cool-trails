@@ -3,7 +3,10 @@ from shapely.geometry import shape
 from sqlalchemy import text
 import database
 from math import radians, sin, cos, sqrt, atan2
+from functools import lru_cache
+from rapidfuzz import process, fuzz
 
+@lru_cache()
 def get_trail_info(trail_id):
     with database.engine.connect() as conn:
         query = text("SELECT * FROM trails WHERE id = :id")
@@ -41,6 +44,12 @@ def haversine(lat1, lon1, lat2, lon2):
     c = 2 * atan2(sqrt(a), sqrt(1-a))
     return R * c
 
+@lru_cache()
+def get_all_trails():
+    with database.engine.connect() as conn:
+        return conn.execute(text("SELECT id, name FROM trails")).fetchall()
+
+@lru_cache()
 def search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng, radius, page, limit):
     clauses = []
     params  = { "limit": limit, "offset": (page-1) * limit }
@@ -91,8 +100,57 @@ def search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng
 
     with database.engine.connect() as conn:
         result = conn.execute(text(sql), params)
-        return [dict(r) for r in result]
+        trails = [dict(r) for r in result]
+    
+    # if FTS gave us nothing *and* the user actually typed something, do a quick fuzzy match on trail names
+    if not trails and q:
+        rows = get_all_trails()
+        name_map = {row["name"]: row["id"] for row in rows}
 
+        # find the top N fuzzy matches to q
+        matches = process.extract(
+            q,
+            name_map.keys(),
+            scorer=fuzz.WRatio,
+            limit=limit
+        )
+        good = [name for name, score, _ in matches if score >= 60]
+
+        if good:
+            # build dynamic IN-list and CASE ordering
+            params2 = {"limit": limit}
+            in_params = []
+            when_clauses = []
+
+            for idx, name in enumerate(good):
+                key = f"name_{idx}"
+                in_params.append(f":{key}")
+                when_clauses.append(f"WHEN :{key} THEN {idx}")
+                params2[key] = name
+
+            in_list   = ", ".join(in_params)
+            when_sql  = "\n        ".join(when_clauses)
+            else_idx  = len(good)
+
+            sql2 = text(f"""
+                SELECT *
+                FROM trails
+                WHERE name IN ({in_list})
+                ORDER BY
+                CASE name
+                    {when_sql}
+                    ELSE {else_idx}
+                END
+                LIMIT :limit
+            """)
+
+            with database.engine.connect() as conn:
+                rows2 = conn.execute(sql2, params2).fetchall()
+            trails = [dict(r) for r in rows2]
+
+    return trails
+
+@lru_cache()
 def suggest_trails(q, limit):
     sql = text("""
         SELECT name

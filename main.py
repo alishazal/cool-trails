@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from typing import Optional, List
+from typing import Optional, List, Tuple
 from pybars import Compiler
 
 from services.osm import fetch_trails, fetch_canopy
@@ -61,8 +61,8 @@ def home():
 @app.get("/search", response_class=HTMLResponse)
 def search(
     q: str = "",
-    diff: Optional[List[str]] = [],
-    shade: Optional[List[int]] = [],
+    diff: Optional[Tuple[str]] = tuple([]),
+    shade: Optional[Tuple[int]] = tuple([]),
     min_len: Optional[float] = 0,
     maxlen: Optional[float] = 1e9,
     min_gain: Optional[float] = 0,
