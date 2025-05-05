@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,7 +8,7 @@ from pybars import Compiler
 
 from services.osm import fetch_trails, fetch_canopy
 import models, database, domain, llm
-from domain import get_hardcoded_reviews_for_trail, get_trail_info, parse_description
+from domain import get_hardcoded_reviews_for_trail, get_trail_info, parse_description, suggest_trails
 
 app = FastAPI()
 
@@ -75,7 +75,6 @@ def search(
 ):
     userlat = float(userlat) if userlat is not None and userlat else userlat
     userlng = float(userlng) if userlng is not None and userlng else userlng
-    
     trails = domain.search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng, radius, page, limit)
     has_prev  = page > 1
     has_next  = len(trails) == limit
@@ -96,6 +95,18 @@ def search(
     }
     html_content = render_template("search.hbs", context)
     return HTMLResponse(content=html_content)
+
+@app.get("/suggest")
+def suggest(
+    q: str = Query(..., min_length=1, description="Search prefix"),
+    limit: int = Query(5, ge=1, le=20, description="Max suggestions")
+):
+    """
+    Return up to `limit` trail names whose name or description
+    begins with the prefix `q`, ordered by full‐text relevance.
+    """
+    suggestions = suggest_trails(q, limit)
+    return JSONResponse(suggestions)
 
 # Trail info page: loads details via SQL and renders trail.hbs
 @app.get("/trail/{trail_id}", response_class=HTMLResponse)

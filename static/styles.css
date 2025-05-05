@@ -141,7 +141,16 @@ textarea:focus {
     }
 }
 
-
 input[type="search"]::-webkit-search-cancel-button {
     display: none;
+}
+
+#autocomplete-list {
+    top: 100%;
+    left: 0;
+}
+
+#autocomplete-list .list-group-item-action:hover {
+    background-color: #e9f7ef;
+    cursor: pointer;
 }

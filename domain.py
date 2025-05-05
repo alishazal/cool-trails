@@ -93,6 +93,23 @@ def search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng
         result = conn.execute(text(sql), params)
         return [dict(r) for r in result]
 
+def suggest_trails(q, limit):
+    sql = text("""
+        SELECT name
+        FROM trails_fts
+        WHERE trails_fts MATCH :prefix || '*'
+        ORDER BY bm25(trails_fts) ASC
+        LIMIT :limit
+    """)
+    params = {"prefix": q, "limit": limit}
+
+    with database.engine.connect() as conn:
+        rows = conn.execute(sql, params).fetchall()
+
+    # Flatten to a list of strings
+    suggestions = [row[0] for row in rows]
+    return suggestions
+
 def get_hardcoded_reviews_for_trail(trail_id, trail_name="this trail"):
     return [
         {
