@@ -179,7 +179,7 @@ vertical-align: text-bottom;
     background: rgba(255,255,255,0.8);
     padding: 0.75rem 1rem;
     border-radius: 0.375rem;
-    z-index: 1000;
+    z-index: 9999;
 }
 
 .leaflet-container { z-index: 0; }

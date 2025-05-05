@@ -40,7 +40,7 @@
     <!-- Start trail button and get packing recs button -->
     <div class="row g-2 mt-3">
       <div class="col-6">
-        <button class="btn btn-success w-100">Start Trail</button>
+        <button id="startTrail" class="btn btn-success w-100">Start Trail</button>
       </div>
       <div class="col-6">
         <button id="getPackingRecs" class="btn btn-warning w-100">Get Packing Recs 🤖</button>
@@ -282,6 +282,45 @@
 
     }
   })();
+
+  let watchId    = null;
+  let userMarker = null;
+  let started    = false;
+
+  const startBtn = document.getElementById('startTrail');
+  startBtn.addEventListener('click', () => {
+    if (!started) {
+      // first click → start watching
+      if (!navigator.geolocation) {
+        return alert('Geolocation not supported');
+      }
+      watchId = navigator.geolocation.watchPosition(pos => {
+        const latlng = [pos.coords.latitude, pos.coords.longitude];
+        if (!userMarker) {
+          userMarker = L.marker(latlng)
+            .addTo(map)
+            .openPopup();
+        } else {
+          userMarker.setLatLng(latlng);
+        }
+        map.panTo(latlng);
+      }, err => console.warn(err), {
+        enableHighAccuracy: true,
+        maximumAge:        5000,
+        timeout:           5000,
+      });
+
+      startBtn.textContent = 'Re-center';
+      started = true;
+
+    } else {
+      // subsequent clicks → just pan to current
+      if (userMarker) {
+        map.panTo(userMarker.getLatLng());
+      }
+    }
+  });
+
 </script>
 
 </body>
