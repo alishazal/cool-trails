@@ -1,9 +1,9 @@
 from openai import OpenAI
 import json
+import os
 
-api_key = "api key"
-
-client = OpenAI(api_key=api_key)
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+client = OpenAI()
 
 PACKING_REC_SCHEMA = {
         "type": "json_schema",
@@ -58,7 +58,7 @@ def get_completion(prompt):
         return response
     except Exception as e:
         print(f"Error generating completion for: {prompt[:50]}... - {str(e)}")
-        return None
+        raise e
 
 def get_response_json(completion):
     return json.loads(completion.choices[0].message.content)

@@ -134,7 +134,7 @@ def trail_detail(trail_id: int, q: str = None):
 
 # Trail info page: loads details via SQL and renders trail.hbs
 @app.get("/trail/{trail_id}/packing_recs", response_class=HTMLResponse)
-def packing_recs(llm_input: str):
+def packing_recs(trail_id: int, llm_input: str):
     resp_json = llm.get_completion_json(llm_input)
     return JSONResponse(content=resp_json)
 

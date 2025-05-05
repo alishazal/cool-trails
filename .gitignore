@@ -3,3 +3,4 @@ __pycache__
 trails.db
 *.osm.pbf
 *.db
+.env
