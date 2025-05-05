@@ -217,7 +217,7 @@
     /* ---------- draw stored polygon ---------- */
     const trailPolygon = {{{trail.polygon}}};
     const polyLayer = L.geoJSON(trailPolygon, {
-      style: { color: "#0077ff", weight: 3, opacity: 0.6 },
+      style: { color: "#0077ff", weight: 10, opacity: 0.8 },
     }).addTo(map);
 
     // Auto-zoom to polygon if centre not supplied
@@ -238,7 +238,7 @@
 
       // 3. draw canopy and keep a reference for point-in-polygon tests
       const canopyLayer = L.geoJSON(canopyFC, {
-        style: { color: "#228b22", fillOpacity: 0.35, weight: 0 },
+        style: { color: "#228b22", fillOpacity: 0.35, weight: 5 },
       }).addTo(map);
 
       // 4. colour trail segments green/orange
@@ -271,7 +271,7 @@
             ],
             {
               color: shaded ? "green" : "orange",
-              weight: 6,
+              weight: 10,
               opacity: 0.9,
             }
           ).addTo(shadeLayer);
