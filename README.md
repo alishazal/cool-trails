@@ -37,6 +37,21 @@ Cool trails is an intuitve app to help all hikers from beginner to expert prepar
 6. [Do this only once - it downloads a 1.2 GB file] Next, download the california trails data by running ```sh scripts/download_data.sh``` in terminal at the root directory.
 7. Insert the trails from the file to the database. Run ```python -m scripts.ingest_ca_trails_adv``` in terminal at the root directory. This script takes around 10 minutes to run.
 8. Then merge broken trails (openstreetmap breaks trails due to varying surfaces, so we're gonna stitch segments together to form full trails). Run ```python -m scripts.merge_segments```. This script also takes around 10 minutes to run.
+9. Now create the FTS5 table for autocomplete suggestions. First open the database by running the following in terminal: ```sqlite3 trails.db```. Once you're in sqlite's cli, run the following:
+```
+CREATE VIRTUAL TABLE IF NOT EXISTS trails_fts
+USING fts5(
+  name, 
+  description,
+  content='trails',           -- link to your real table
+  content_rowid='id'          -- use the same PK
+);
+```
+Then run the following (takes a couple of minutes):
+```
+INSERT INTO trails_fts(rowid, name, description)
+  SELECT id, name, description FROM trails;
+```
 
 ## Usage
 
