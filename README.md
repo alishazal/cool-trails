@@ -1,5 +1,27 @@
-# Cool Trails
-Cool trails app 🎉
+<div align="center" width="100%">
+    <img src="images/Logo Image.jpg" width="400" alt="" />
+</div>
+
+# Cool Trails 🥾
+
+<!-- ▼▼▼▼ Uncomment these if the Repo is made public ▼▼▼▼ -->
+
+<!-- <a target="_blank" href="https://github.com/rlmoore-b/cool-trails"><img src="https://img.shields.io/github/stars/rlmoore-b/cool-trails?style=flat" /></a> 
+<a target="_blank" href="https://github.com/rlmoore-b/cool-trails"><img src="https://img.shields.io/github/last-commit/rlmoore-b/cool-trails" ></a> -->
+<!-- <a href="https://github.com/rlmoore-b/cool-trails"><img src="https://hits.sh/github.com/rlmoore-b/cool-trails.svg?style=flat-square&label=%20Views&color=purple" alt="Views" /></a> -->
+
+<img src="https://img.shields.io/badge/Python-FFD43B?style=for-the-badge&logo=python&logoColor=blue" alt="Python" /></a>
+<img src="https://img.shields.io/badge/Handlebars%20js-f0772b?style=for-the-badge&logo=handlebarsdotjs&logoColor=black" alt="Handlebars" /><a>
+<img src="https://img.shields.io/badge/Sqlite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite" /></a>
+<img src="https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap" /></a>
+<img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS" /></a>
+<img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML" /></a>
+<img src="https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E" alt="JavaScript" /></a>
+<img src="https://img.shields.io/badge/fastapi-109989?style=for-the-badge&logo=FASTAPI&logoColor=white" alt="FastAPI" /></a>
+
+Cool trails is an intuitve app to help all hikers from beginner to expert prepare for their upcoming adventure. It provides gear recommendations based on trail conditions, and shows users the shaded and sunny parts of any trail. 
+
+<img src="images/Demo Image.jpg" width="700" alt="" />
 
 ## Tech Stack
 - BE: Python with FastAPI
@@ -34,3 +56,10 @@ To access the database do the following:
 3. Now you should be in the database file. You can run commands like ```.tables``` or any other sql commands to check out the available tables, etc.
 
 If you make changes to the database schema, delete the trails.db file and run the server again to have a new trails.db file created.
+
+## Created By
+
+- [Ali Shazal](https://github.com/alishazal)
+- [Brevin Smider](https://github.com/bsmider)
+- [Robert Moore](https://github.com/rlmoore-b)
+- [Franco Lopez](https://github.com/FrancoLopezDev)
