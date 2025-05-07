@@ -7,7 +7,7 @@ from typing import Optional, List, Tuple
 from pybars import Compiler
 
 from services.osm import fetch_trails, fetch_canopy
-import models, database, domain, llm
+import models, database, domain, llm, util
 from domain import get_hardcoded_reviews_for_trail, get_trail_info, parse_description, suggest_trails
 
 app = FastAPI()
@@ -48,11 +48,13 @@ def render_template(template_name: str, context: dict = {}) -> str:
 
 @app.get("/health")
 def health_check():
-    path = "data/trails.db"
+    path = "tmp/trails.db"
     exists = os.path.exists(path)
+    all_files = util.list_files_and_folders(os.path.join(os.path.dirname(__file__), "../tmp"))
     return {
         "db_present": exists,
-        "db_size_bytes": os.path.getsize(path) if exists else None
+        "db_size_bytes": os.path.getsize(path) if exists else None,
+        "all_files": all_files
     }
 
 # Home page: renders home.hbs
