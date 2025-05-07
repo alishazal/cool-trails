@@ -126,8 +126,6 @@
   <script>
       const videoPlayer = document.getElementById('background-video');
       const videoSource = document.getElementById('video-source');
-      const videoFolderPath = "{{{videos_path}}}"; 
-      const numberOfVideos = 5;
 
       function setRandomVideo() {
           console.log("Attempting to set random video..."); // Log start
@@ -136,9 +134,7 @@
               return;
           }
           try {
-              const randomVideoNumber = Math.floor(Math.random() * numberOfVideos) + 1;
-              const randomVideoFilename = `${randomVideoNumber}.mp4`;
-              const randomVideoSrc = videoFolderPath + randomVideoFilename;
+              const randomVideoSrc = "{{{video_path}}}";
               console.log(`Setting video source to: ${randomVideoSrc}`);
               videoSource.setAttribute('src', randomVideoSrc);
               videoPlayer.load(); 
