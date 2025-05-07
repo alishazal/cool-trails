@@ -97,6 +97,37 @@
       </div>
     </div>
 
+
+    <!-- Trail Weather Card -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-warning text-white">
+        <h5 class="mb-0">Trail Weather</h5>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-striped table-hover table-sm mb-0">
+          <tbody>
+            <tr>
+              <th scope="row">📃 Description</th>
+              <td id="weatherDesc"></td>
+            </tr>
+            <tr>
+              <th scope="row">🌡️ Temperature</th>
+              <td id="weatherTemp"></td>
+            </tr>
+            <tr>
+              <th scope="row">💧 Humidity</th>
+              <td id="weatherHumidity"></td>
+            </tr>
+            <tr>
+              <th scope="row">💨 Wind Speed</th>
+              <td id="weatherWind"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
     <h3 class="mt-5 mb-3">📝 Reviews</h3>
 
     {{#if reviews}}
@@ -136,6 +167,41 @@
     }
   }
 
+  // ──────── Weather Table populater ─────────
+  async function populateWeatherTable() {
+    const lat = {{trail.center_lat}}, lon = {{trail.center_lng}};
+    try {
+      const weatherData = await getCurrentWeather(lat, lon);
+      let weather_info = "";
+      if (weatherData) {
+          // Get references to the table data cells
+        const desc = document.getElementById('weatherDesc');
+        const temp = document.getElementById('weatherTemp');
+        const humidity = document.getElementById('weatherHumidity');
+        const wind = document.getElementById('weatherWind');
+
+        const tempF = celsiusToFahrenheit(weatherData.main.temp);
+
+        // Fill in the table data
+        desc.textContent = weatherData.weather[0].description;
+        temp.textContent = `${tempF}°F`;
+        humidity.textContent = `${weatherData.main.humidity}%`;
+        wind.textContent = `${weatherData.wind.speed} MPH`;
+        
+      }
+    } catch (err) {
+      console.error("Error in getPackingRecsInput:", err);
+      throw err;
+    }
+  }
+
+  function celsiusToFahrenheit(celsius) {
+    const fahrenheit = (celsius * 9/5) + 32;
+    return fahrenheit;
+  }
+
+  populateWeatherTable()
+
   // ──────── LLM input builder ─────────
   async function getPackingRecsInput() {
     const lat = {{trail.center_lat}}, lon = {{trail.center_lng}};
@@ -151,8 +217,9 @@
           `Wind Speed: ${weatherData.wind.speed} m/s`;
       }
       const llm_input =
-        `Provide packing recommendations for the following trail: {{trail.name}}, ` +
-        `given the following information:\n${weather_info}`;
+        `Provide packing recommendations for the following trail: {{trail.name}} ` +
+        `given the following information:\n${weather_info}` +
+        `Give a maximum of 5 recommendations.`;
       console.log("LLM Input:", llm_input);
       return llm_input;
     } catch (err) {
@@ -160,6 +227,7 @@
       throw err;
     }
   }
+
 
   // ──────── Packing button hookup ─────────
   const getPackingRecsButton = document.getElementById("getPackingRecs");
