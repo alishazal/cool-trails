@@ -1,4 +1,4 @@
-import os
+import os, urllib.request
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -26,10 +26,14 @@ app.add_middleware(
 )
 
 # Create DB tables if they don't exist
-if os.environ.get("VERCEL") is None:
-    models.Base.metadata.create_all(bind=database.engine)
-else:
+if os.environ.get("VERCEL"):
+    DB_PATH = "/tmp/trails.db"
+    url = "https://github.com/alishazal/cool-trails/releases/download/v1.0.0/trails.db"
+    urllib.request.urlretrieve(url, DB_PATH)
     database.init_db()
+else:
+    DB_PATH = "./trails.db"
+    models.Base.metadata.create_all(bind=database.engine)
 
 # Mount static files (CSS, images, etc.)
 static_path = os.path.join(os.path.dirname(__file__), "../static")
@@ -48,13 +52,10 @@ def render_template(template_name: str, context: dict = {}) -> str:
 
 @app.get("/health")
 def health_check():
-    path = "tmp/trails.db"
-    exists = os.path.exists(path)
-    all_files = util.list_files_and_folders(os.path.dirname(__file__))
+    exists = os.path.exists(DB_PATH)
     return {
         "db_present": exists,
-        "db_size_bytes": os.path.getsize(path) if exists else None,
-        "all_files": all_files
+        "db_size_bytes": os.path.getsize(DB_PATH) if exists else None
     }
 
 # Home page: renders home.hbs
