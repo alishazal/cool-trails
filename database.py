@@ -31,10 +31,9 @@ def init_db():
             """
         ))
 
-        conn.execute(text(
-            """
-            INSERT OR REPLACE INTO trails_fts(rowid, name, description)
-            SELECT id, name, description
-              FROM trails;
-            """
-        ))
+        count = conn.execute(text("SELECT count(*) FROM trails_fts")).scalar()
+        if count == 0:
+            conn.execute(text("""
+                INSERT INTO trails_fts(rowid,name,description)
+                SELECT id,name,description FROM trails;
+            """))
