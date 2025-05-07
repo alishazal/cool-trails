@@ -1,5 +1,5 @@
 import os
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -15,3 +15,26 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
+def init_db():
+    # trails.db is already created; here we're creating the fts table for search
+    with engine.connect() as conn:
+        conn.execute(text(
+            """
+            CREATE VIRTUAL TABLE IF NOT EXISTS trails_fts
+            USING fts5(
+              name, 
+              description,
+              content='trails',
+              content_rowid='id'
+            );
+            """
+        ))
+
+        conn.execute(text(
+            """
+            INSERT OR REPLACE INTO trails_fts(rowid, name, description)
+            SELECT id, name, description
+              FROM trails;
+            """
+        ))

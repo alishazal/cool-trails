@@ -12,24 +12,24 @@ from domain import get_hardcoded_reviews_for_trail, get_trail_info, parse_descri
 
 app = FastAPI()
 
-
 origins = [
-    "http://127.0.0.1:8000",  # Allow requests from your frontend's origin
-    "http://localhost:8000",  # If your frontend might also run on localhost
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],  # Allows all request headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
-
 
 # Create DB tables if they don't exist
 if os.environ.get("VERCEL") is None:
     models.Base.metadata.create_all(bind=database.engine)
+else:
+    database.init_db()
 
 # Mount static files (CSS, images, etc.)
 static_path = os.path.join(os.path.dirname(__file__), "../static")
