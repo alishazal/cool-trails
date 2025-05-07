@@ -31,12 +31,12 @@ app.add_middleware(
 models.Base.metadata.create_all(bind=database.engine)
 
 # Mount static files (CSS, images, etc.)
-static_path = os.path.join(os.path.dirname(__file__), "static")
+static_path = os.path.join(os.path.dirname(__file__), "../static")
 app.mount("/static", StaticFiles(directory=static_path), name="static")
 
 # Helper function to load and render a Handlebars template
 def render_template(template_name: str, context: dict = {}) -> str:
-    templates_dir = os.path.join(os.path.dirname(__file__), "templates")
+    templates_dir = os.path.join(os.path.dirname(__file__), "../templates")
     template_path = os.path.join(templates_dir, template_name)
     with open(template_path, "r", encoding="utf-8") as file:
         source = file.read()

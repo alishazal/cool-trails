@@ -32,7 +32,7 @@ Cool trails is an intuitve app to help all hikers from beginner to expert prepar
 1. Initialize a venv or conda environment. In VSCode you can do this by doing ```cmd + shift + P```, then select "Python: Create Environment", then select "Venv", and finally select your Python version.
 2. Run ```brew install geos``` in terminal to install GEOS which is required to install Shapely (one of the Python libraries we're using).
 3. Run ```pip install -r requirements.txt``` in terminal to install all required Python libraries in the env.
-4. To run the app, run the following in terminal at the root directory of this project: ```uvicorn main:app --reload```
+4. To run the app, run the following in terminal at the root directory of this project: ```uvicorn api.main:app --reload```
 5. The app will be running on ```http://localhost:8000/``` or check the logs in the terminal to see which port its running on.
 6. [Do this only once - it downloads a 1.2 GB file] Next, download the california trails data by running ```sh scripts/download_data.sh``` in terminal at the root directory.
 7. Insert the trails from the file to the database. Run ```python -m scripts.ingest_ca_trails_adv``` in terminal at the root directory. This script takes around 10 minutes to run.
