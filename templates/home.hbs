@@ -26,7 +26,7 @@
       z-index: -100;
       object-fit: cover;
       filter: brightness(0.7);
-      background-color: #2d3748;
+      background-color: #a2b8a1;
     }
 
     .home-wrapper h1 {
@@ -126,8 +126,8 @@
   <script>
       const videoPlayer = document.getElementById('background-video');
       const videoSource = document.getElementById('video-source');
-      const videoFolderPath = '/static/videos/'; 
-      const numberOfVideos = 8; 
+      const videoFolderPath = "{{{videos_path}}}"; 
+      const numberOfVideos = 6; 
 
       function setRandomVideo() {
           console.log("Attempting to set random video..."); // Log start

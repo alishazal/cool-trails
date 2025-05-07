@@ -106,7 +106,7 @@ def search_trails(q, diff, min_len, maxlen, min_gain, max_gain, userlat, userlng
         trails = [dict(r) for r in result]
     
     # if FTS gave us nothing *and* the user actually typed something, do a quick fuzzy match on trail names
-    if not trails and q and page == 1:
+    if not trails and q and page == 1 and not diff and not maxlen != 1e9:
         rows = get_all_trails()
         name_map = {row["name"]: row["id"] for row in rows}
 

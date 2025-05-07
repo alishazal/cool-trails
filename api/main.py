@@ -25,12 +25,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create DB tables if they don't exist
-if os.environ.get("VERCEL"):
+IS_PROD = os.environ.get("VERCEL")
+
+if IS_PROD:
     DB_PATH = "/tmp/trails.db"
-    url = "https://github.com/alishazal/cool-trails/releases/download/v1.0.0/trails.db"
-    urllib.request.urlretrieve(url, DB_PATH)
+    release_assets_url = "https://github.com/alishazal/cool-trails/releases/download/v1.0.0"
+    urllib.request.urlretrieve(f"{release_assets_url}/trails.db", DB_PATH)
     database.init_db()
+    
+    for i in range(1, 7):
+        curr_vid = f"{release_assets_url}/{i}.mp4"
+        curr_path = f"/tmp/{i}.mp4"
+        urllib.request.urlretrieve(curr_vid, curr_path)
 else:
     DB_PATH = "./trails.db"
     models.Base.metadata.create_all(bind=database.engine)
@@ -63,9 +69,7 @@ def health_check():
 @app.get("/home", response_class=HTMLResponse)
 def home():
     context = {
-        "message": "Cool Trails",
-        "shades": [25, 50, 75, 100],
-        "difficulties": ["easy", "moderate", "hard"],
+        "videos_path": '/tmp/' if IS_PROD else "/static/videos/"
     }
     html_content = render_template("home.hbs", context)
     return HTMLResponse(content=html_content)

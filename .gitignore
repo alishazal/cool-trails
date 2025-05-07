@@ -1,7 +1,7 @@
 .venv
 __pycache__
-trails.db
 *.osm.pbf
 *.db
 .env
 .DS_Store
+*.mp4
