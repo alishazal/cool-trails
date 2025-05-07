@@ -21,12 +21,12 @@ h1 {
     font-weight: bold;
 }
 
-h1::before {
+/* h1::before {
     content: '\2744\FE0F';
     margin-right: 0.5em;
     display: inline-block;
     vertical-align: middle;
-}
+} */
 
 .filter-sidebar {
     position: fixed;
@@ -141,7 +141,7 @@ h1::before {
   .filter-fab{
     position:absolute; right:4px; top:4px; bottom:4px;
     padding:0 12px;
-    border-radius:8px;
+    border-radius:16px;
     font-size:.9rem;
   }
   
