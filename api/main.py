@@ -45,6 +45,15 @@ def render_template(template_name: str, context: dict = {}) -> str:
     rendered = template(context)
     return rendered
 
+@app.get("/health")
+def health_check():
+    path = "data/trails.db"
+    exists = os.path.exists(path)
+    return {
+        "db_present": exists,
+        "db_size_bytes": os.path.getsize(path) if exists else None
+    }
+
 # Home page: renders home.hbs
 @app.get("/", response_class=HTMLResponse)
 @app.get("/home", response_class=HTMLResponse)
