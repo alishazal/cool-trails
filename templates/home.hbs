@@ -37,10 +37,10 @@
 </head>
 <body>
     	
-  <video autoplay muted loop playsinline id="background-video">
-      <source id="video-source" src="" type="video/mp4">
-      Your browser does not support the video tag.
-  </video>
+  <img autoplay muted loop playsinline id="background-video">
+      {{!-- <source id="video-source" src="" type="video/mp4"> --}}
+      {{!-- Your browser does not support the video tag. --}}
+  </img>
   <div class="home-wrapper d-flex flex-column align-items-center px-3 py-4 mt-auto">
     <div class="w-100">
       <h1 class="mb-4">
@@ -125,26 +125,20 @@
   </script>
   <script>
       const videoPlayer = document.getElementById('background-video');
-      const videoSource = document.getElementById('video-source');
-      const videoFolderPath = "{{{videos_path}}}"; 
-      const numberOfVideos = 5;
 
       function setRandomVideo() {
           console.log("Attempting to set random video..."); // Log start
-          if (!videoPlayer || !videoSource) {
+          if (!videoPlayer) {
               console.error("Error: Video player <video> or <source> element not found.");
               return;
           }
           try {
-              const randomVideoNumber = Math.floor(Math.random() * numberOfVideos) + 1;
-              const randomVideoFilename = `${randomVideoNumber}.mp4`;
-              const randomVideoSrc = videoFolderPath + randomVideoFilename;
+              const randomVideoSrc = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExODhjZ3VveDd4bHc5bms4Ymtrczh1bzhmam51c2tia3Nma3EyaTd0YiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3ohhwg3O1TGRXHQYh2/giphy.gif";
               console.log(`Setting video source to: ${randomVideoSrc}`);
-              videoSource.setAttribute('src', randomVideoSrc);
-              videoPlayer.load(); 
+              videoPlayer.setAttribute('src', randomVideoSrc);
 
               videoPlayer.addEventListener('error', (e) => {
-                  console.error(`Error loading video '${videoSource.src}':`, videoPlayer.error);
+                  console.error(`Error loading video '${videoPlayer.src}':`, videoPlayer.error);
 
               }, { once: true });
           } catch (error) {
