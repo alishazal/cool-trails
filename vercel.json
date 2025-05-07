@@ -1,8 +1,10 @@
 {
-    "functions": {
-      "api/**/*.py": {
-        "runtime": "python3.9.6"
-      }
-    },
-    "installCommand": "curl -L -o data/trails.db https://github.com/alishazal/cool-trails/releases/download/v1.0.0/trails.db && pip install -r requirements.txt"
+  "functions": {
+    "api/**/*.py": {
+      "runtime": "vercel-python@0.8.0"
+    }
+  },
+  "build": {
+    "installCommand": "curl -L -o data/trails.db https://github.com/rlmoore-b/cool-trails/releases/download/v1.0.0/trails.db && pip install -r requirements.txt"
+  }
 }
