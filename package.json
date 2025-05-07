@@ -2,7 +2,7 @@
     "name": "cool-trails",
     "version": "1.0.0",
     "scripts": {
-      "postinstall": "curl -L -o trails.db https://github.com/alishazal/cool-trails/releases/download/v1.0.0/trails.db"
+      "postinstall": "curl -L -o /tmp/trails.db https://github.com/alishazal/cool-trails/releases/download/v1.0.0/trails.db"
     }
 }
   

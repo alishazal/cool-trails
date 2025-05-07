@@ -28,7 +28,8 @@ app.add_middleware(
 
 
 # Create DB tables if they don't exist
-models.Base.metadata.create_all(bind=database.engine)
+if os.environ.get("VERCEL") is None:
+    models.Base.metadata.create_all(bind=database.engine)
 
 # Mount static files (CSS, images, etc.)
 static_path = os.path.join(os.path.dirname(__file__), "../static")
