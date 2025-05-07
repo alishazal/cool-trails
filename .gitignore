@@ -4,4 +4,4 @@ __pycache__
 *.db
 .env
 .DS_Store
-# *.mp4
+*.mp4
