@@ -4,5 +4,5 @@
         "runtime": "python3.9.6"
       }
     },
-    "installCommand": "curl -L -o data/trails.db https://github.com/rlmoore-b/cool-trails/releases/download/v1.0.0/trails.db && pip install -r requirements.txt"
+    "installCommand": "curl -L -o data/trails.db https://github.com/alishazal/cool-trails/releases/download/v1.0.0/trails.db && pip install -r requirements.txt"
 }
