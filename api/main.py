@@ -35,11 +35,11 @@ if IS_PROD:
     print("Init db...")
     database.init_db()
     
-    for i in range(1, 3):
-        curr_vid = f"{release_assets_url}/{i}.mp4"
-        curr_path = f"/tmp/{i}.mp4"
-        print(f"Downloading video {curr_vid}...")
-        urllib.request.urlretrieve(curr_vid, curr_path)
+    # for i in range(1, 3):
+    #     curr_vid = f"{release_assets_url}/{i}.mp4"
+    #     curr_path = f"/tmp/{i}.mp4"
+    #     print(f"Downloading video {curr_vid}...")
+    #     urllib.request.urlretrieve(curr_vid, curr_path)
 else:
     DB_PATH = "./trails.db"
     models.Base.metadata.create_all(bind=database.engine)
@@ -72,7 +72,8 @@ def health_check():
 @app.get("/home", response_class=HTMLResponse)
 def home():
     context = {
-        "videos_path": '/tmp/' if IS_PROD else "/static/videos/"
+        # "videos_path": '/tmp/' if IS_PROD else "/static/videos/"
+        "videos_path": "/static/videos/"
     }
     html_content = render_template("home.hbs", context)
     return HTMLResponse(content=html_content)
