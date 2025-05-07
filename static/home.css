@@ -108,34 +108,37 @@ h1 {
 }
 
 .home-wrapper{
-    max-width: 420px;         /* perfect for phones, still OK on desktop */
+    max-width: 420px;   
     margin: 0 auto;
     text-align: center;
   }
   
   /* Use the same hue for ❄️ icon + title */
-  h1{
+  /* h1{
     font-size: 2.3rem;
     font-weight:700;
-    color:#e0e8b0;            /* keep your existing colour */
-  }
+    color:#e0e8b0; 
+  } */
   
   /* --- search field visual tweaks --- */
   .search-input{
     height: 44px;
-    padding-left: 42px;       /* leave room for 🔍 icon */
+    padding-left: 20px;
     border-radius: 8px;
   }
+
+  
   
   /* magnifier before input */
-  .search-input::placeholder{color:#6c757d;}
+  /* .search-input::placeholder{color:#6c757d;}
   .position-relative::before{
-    content:'\1F50D';         /* 🔍 */
+    content:'\1F50D';         
     position:absolute; left:14px; top:50%;
     transform:translateY(-50%);
     font-size:1rem; color:#6c757d;
     pointer-events:none;
-  }
+} */
+  
   
   /* --- floating Filter button inside search box --- */
   .filter-fab{
@@ -149,4 +152,82 @@ h1 {
   @media(max-width:360px){
     .filter-sidebar{width:260px}
   }
+
+.btn-outline-success {
+    background-color: #f65009; /* Standard orange */
+    border-color: #f65009;     /* Matching border */
+    color: #FFFFFF;            /* White text - good contrast with orange */
+    border-radius: 100px;
+}
+
+.btn-outline-success:hover,
+.btn-outline-succes:focus,
+.btn-outline-succes:active {
+    background-color: hsl(39, 74%, 49%); /* A slightly darker orange for interaction */
+    border-color: #CC8400;     /* Matching darker border */
+    color: #FFFFFF;
+}
+
+
+/* Ensure the input-group itself clips its children correctly for the pill shape */
+.input-group.rounded-pill {
+    overflow: hidden;
+  }
   
+  /* Remove the default blue focus glow from the input field itself */
+  .input-group.rounded-pill .form-control:focus {
+    box-shadow: none;
+  }
+  
+  /* Apply a focus style to the ENTIRE input-group when anything inside it is focused */
+  .input-group.rounded-pill:focus-within {
+    outline: 0; /* Remove default browser outline */
+    /* This creates an orange glow around the whole pill group, matching your button */
+    box-shadow: 0 0 0 0.25rem rgba(246, 80, 9, 0.35); /* Orange glow, adjust opacity as needed */
+  }
+  
+  /* --- UNCOMMENT AND ADJUST FOR LEFT SEARCH ICON --- */
+  /* Magnifier icon on the left of the input */
+  /* .input-group.position-relative::before { 
+    content:'\1F50D'; 
+    position:absolute;
+    left: 15px; 
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1rem; 
+    color: #6c757d;
+    pointer-events: none;
+    z-index: 3; 
+  } */
+  
+
+  /* Make the input field's border orange to match the button */
+.input-group.rounded-pill .form-control.search-input {
+    border-color: #f65009; /* Same orange as your button's border */
+  }
+  
+  /* When the input field is focused (and it's part of the pill group) */
+  .input-group.rounded-pill .form-control.search-input:focus {
+    /* The focus-within on the group provides the orange glow box-shadow.
+       The input itself will also get a focused border color.
+       Let's make it the darker orange to match your button's hover/focus border. */
+    border-color: #CC8400; /* Darker orange for focus, same as button:focus border */
+    box-shadow: none; /* Keep this to prevent Bootstrap's default blue input focus shadow */
+  }
+  
+  /* --- Ensure these existing rules are in place for the pill group --- */
+  .input-group.rounded-pill {
+    overflow: hidden;
+  }
+  
+  .input-group.rounded-pill .form-control:focus { /* General rule for any form-control in the pill */
+    box-shadow: none;
+  }
+  
+  .input-group.rounded-pill:focus-within {
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(246, 80, 9, 0.35); /* Your orange glow */
+  }
+
+  /* In your styles.css or home.css */
+

@@ -41,24 +41,24 @@
       <source id="video-source" src="" type="video/mp4">
       Your browser does not support the video tag.
   </video>
-  <div class="home-wrapper d-flex flex-column align-items-center px-3 py-4 mt-3">
+  <div class="home-wrapper d-flex flex-column align-items-center px-3 py-4 mt-auto">
     <div class="w-100">
       <h1 class="mb-4">
         <img src="/static/logo_dark.svg" alt="Cool Trails Logo" style="height: 125px;"> </h1>
     </div>
     
-
     <form action="/search" method="get" class="w-100" style="max-width:420px;">
        <div class="input-group mb-3 position-relative">
         <input
           id="searchInput"
           type="search"
           name="q"
-          class="form-control"
+          style="outline:none;box-shadow:none"
+          class="form-control search-input rounded-pill"
           placeholder="Search trails"
           aria-label="Search"
           autocomplete="off">
-        <button class="btn btn-outline-success" type="submit">Search</button>
+        <button class="btn btn-outline-success rounded-pill" type="submit">Search</button>
 
         <!-- suggestions dropdown -->
         <div id="autocomplete-list" class="list-group position-absolute w-100 mt-1"
