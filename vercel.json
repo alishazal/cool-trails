@@ -6,4 +6,3 @@
     },
     "installCommand": "curl -L -o data/trails.db https://github.com/rlmoore-b/cool-trails/releases/download/v1.0.0/trails.db && pip install -r requirements.txt"
 }
-  
