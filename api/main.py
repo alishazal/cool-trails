@@ -50,7 +50,7 @@ def render_template(template_name: str, context: dict = {}) -> str:
 def health_check():
     path = "tmp/trails.db"
     exists = os.path.exists(path)
-    all_files = util.list_files_and_folders(os.path.join(os.path.dirname(__file__), "../tmp"))
+    all_files = util.list_files_and_folders(os.path.dirname(__file__))
     return {
         "db_present": exists,
         "db_size_bytes": os.path.getsize(path) if exists else None,
