@@ -44,16 +44,16 @@
   <div class="home-wrapper d-flex flex-column align-items-center px-3 py-4 mt-auto">
     <div class="w-100">
       <h1 class="mb-4">
-        <img src="/static/logo_dark.svg" alt="Cool Trails Logo" style="height: 125px;"> </h1>
+        <img src="/static/logo_light.svg" alt="Cool Trails Logo" style="height: 125px;"> </h1>
     </div>
     
-    <form action="/search" method="get" class="w-100" style="max-width:420px;">
+    <form action="/search" method="get" class="w-100 rounded-pill" style="max-width:420px;max-height:55px;padding: 0.3rem;">
        <div class="input-group mb-3 position-relative">
         <input
           id="searchInput"
           type="search"
           name="q"
-          style="outline:none;box-shadow:none"
+          style="border:none;"
           class="form-control search-input rounded-pill"
           placeholder="Search trails"
           aria-label="Search"
@@ -61,7 +61,7 @@
         <button class="btn btn-outline-success rounded-pill" type="submit">Search</button>
 
         <!-- suggestions dropdown -->
-        <div id="autocomplete-list" class="list-group position-absolute w-100 mt-1"
+        <div id="autocomplete-list" class="list-group position-absolute w-100"
             style="z-index:1000; max-height:200px; overflow-y:auto;">
           <!-- JS will inject: -->
           <!-- <button class="list-group-item list-group-item-action">Trail A</button> -->
