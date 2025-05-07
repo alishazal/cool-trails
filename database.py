@@ -17,6 +17,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 def init_db():
+    return
     # trails.db is already created; here we're creating the fts table for search
     with engine.connect() as conn:
         conn.execute(text(
