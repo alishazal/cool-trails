@@ -74,6 +74,11 @@
     <hr>
 
     <!-- Packing Recs will go here -->
+    <div id="packing-loader" class="d-none justify-content-center my-3">
+      <div class="spinner-border text-warning" role="status">
+        <span class="visually-hidden">Loading packing recommendations…</span>
+      </div>
+    </div>
     <div id="packingRecsSection" class="mb-4"></div>
 
     <!-- Trail Info Card -->
@@ -267,8 +272,12 @@
 
   // ──────── Packing button hookup ─────────
   const getPackingRecsButton = document.getElementById("getPackingRecs");
+  const packingLoader = document.getElementById("packing-loader");
   getPackingRecsButton.addEventListener("click", async () => {
     try {
+      packingLoader.classList.remove("d-none");
+      packingLoader.classList.add("d-flex");
+      getPackingRecsButton.disabled = true;
       const llm_input = await getPackingRecsInput();
       const resp = await fetch(
         `/trail/{{trail.id}}/packing_recs?llm_input=${encodeURIComponent(llm_input)}`
@@ -278,6 +287,11 @@
       renderPackingTable(packing_recommendations);
     } catch (err) {
       console.error("Error fetching packing recs:", err);
+    } finally {
+      // hide loader / re-enable button
+      packingLoader.classList.remove("d-flex");
+      packingLoader.classList.add("d-none");
+      getPackingRecsButton.disabled = false;
     }
   });
 
