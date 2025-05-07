@@ -35,7 +35,7 @@ if IS_PROD:
     print("Init db...")
     database.init_db()
     
-    # for i in range(1, 3):
+    # for i in range(1, 6):
     #     curr_vid = f"{release_assets_url}/{i}.mp4"
     #     curr_path = f"/tmp/{i}.mp4"
     #     print(f"Downloading video {curr_vid}...")
@@ -72,8 +72,7 @@ def health_check():
 @app.get("/home", response_class=HTMLResponse)
 def home():
     context = {
-        # "videos_path": '/tmp/' if IS_PROD else "/static/videos/"
-        "videos_path": "/static/videos/"
+        "videos_path": '/tmp/' if IS_PROD else "/static/videos/"
     }
     html_content = render_template("home.hbs", context)
     return HTMLResponse(content=html_content)
