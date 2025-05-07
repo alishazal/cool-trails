@@ -191,7 +191,7 @@
 <script>
   // ──────── Weather helper ─────────
   async function getCurrentWeather(latitude, longitude) {
-    const apiKey = '…';
+    const apiKey = "{{openweather_api_key}}";
     const apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
     try {
       const response = await fetch(apiUrl);

@@ -132,12 +132,15 @@ def trail_detail(trail_id: int, q: str = None):
 
     trail_info = parse_description(trail_dict.get("description", ""))
 
+    openweather_api_key = os.getenv("OPENWEATHER_API_KEY", "")
+
     context = {
         "trail": trail_dict,
         "trail_info": trail_info,
         "center": center,
         "reviews": reviews,
         "q": q,
+        "openweather_api_key": openweather_api_key
     }
     html_content = render_template("trail.hbs", context)
     return HTMLResponse(content=html_content)
