@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
-  <title>Cool Trails - Trail Details</title>
+  <title>Cool Trails - {{trail.name}}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Leaflet CSS -->
@@ -16,8 +16,20 @@
   </style>
 </head>
 <body>
-  <div class="container mt-4">
-    <h1 class="d-flex flex-column align-items-center pt-2">{{trail.name}}</h1>
+  <div class="container mt-0 mt-md-4">
+<div class="position-relative text-center mb-3">
+  
+<a href="/search?q={{q}}" class="btn btn-outline-secondary position-absolute start-0 top-0 d-none d-md-inline">
+  ←
+</a>
+<div class="d-block d-md-none text-center" style="margin-top: 0; padding-top: 0;">
+  <a href="/" class="text-decoration-none d-inline-block">
+    <img src="/static/logo_dark.svg" alt="Cool Trails Logo" style="height: 80px; margin-top: 0; padding-top: 0;">
+  </a>
+</div>
+  <h1 class="m-0">{{trail.name}}</h1>
+</div>
+
     <div class="alert alert-info d-flex align-items-center gap-2 py-2 px-3 mb-3">
       <span class="fw-bold">📍 Location:</span>
       <span class="text-muted">{{trail.location}}</span>
@@ -97,7 +109,6 @@
       </div>
     </div>
 
-
     <!-- Trail Weather Card -->
     <div class="card shadow-sm mb-4">
       <div class="card-header bg-warning text-white">
@@ -127,22 +138,47 @@
       </div>
     </div>
 
+<!-- Stylized header -->
+<div class="mt-5 mb-4 d-flex align-items-center gap-3">
+  <div class="bg-primary text-white rounded-circle d-flex justify-content-center align-items-center" style="width: 44px; height: 44px; font-size: 1.25rem;">
+    📝
+  </div>
+  <h3 class="m-0 fw-semibold">Trail Reviews</h3>
+</div>
 
-    <h3 class="mt-5 mb-3">📝 Reviews</h3>
+{{#if reviews}}
+  <div class="d-flex flex-column gap-3">
+    {{#each reviews}}
+      <div class="card shadow-sm border-0">
+        <div class="card-body">
+          <div class="d-flex align-items-start gap-3 mb-2">
+            <!-- Avatar -->
+            <img src="{{profile_img}}" alt="{{user_name}}" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
 
-    {{#if reviews}}
-      <div class="list-group">
-        {{#each reviews}}
-          <div class="list-group-item">
-            <h5 class="mb-1">{{user_name}}</h5>
-            <p class="mb-1">{{description}}</p>
-            <small class="text-muted">Rating: {{stars}}</small>
+            <!-- User info -->
+            <div>
+              <h6 class="mb-1">{{user_name}}</h6>
+              <small class="text-muted d-block">Reviewed on {{date}}</small>
+              <small class="text-warning d-block">
+                {{stars}}
+              </small>
+            </div>
           </div>
-        {{/each}}
+
+          <!-- Review text -->
+          <p class="mb-0">{{description}}</p>
+        </div>
       </div>
-    {{else}}
-      <p class="text-muted">There are no reviews for this trail yet.</p>
-    {{/if}}
+    {{/each}}
+  </div>
+{{else}}
+  <p class="text-muted">There are no reviews for this trail yet.</p>
+{{/if}}
+  </div>
+
+  <footer class="mt-5 py-4 text-center text-muted border-top">
+  <small>&copy; 2025 Cool Trails · Built with ❤️ by the Cool Trails Team</small>
+</footer>
     
   </div>
 

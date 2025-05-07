@@ -5,6 +5,7 @@ import database
 from math import radians, sin, cos, sqrt, atan2
 from functools import lru_cache
 from rapidfuzz import process, fuzz
+from datetime import datetime
 
 @lru_cache()
 def get_trail_info(trail_id):
@@ -181,31 +182,61 @@ def suggest_trails(q, limit):
     return suggestions
 
 def get_hardcoded_reviews_for_trail(trail_id, trail_name="this trail"):
+
+    def avatar_url(name):
+        if name == "Franco":
+            return f"https://avatars.githubusercontent.com/u/107090061?v=4"
+        if name == "Ali":
+            return f"https://avatars.githubusercontent.com/u/32619954?v=4"
+        if name == "Rob":
+            return f"https://avatars.githubusercontent.com/u/73447567?v=4"
+        if name == "Brevin":
+            return f"https://media.licdn.com/dms/image/v2/D5603AQFzW7hHY2uvEg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1730496940461?e=1752105600&v=beta&t=cnjKere7UlarXf-Sf9va0DRhNPdqpmo1a8g1ODzPeAE"
+        if name == "Truong":
+            return f"https://media.licdn.com/dms/image/v2/D5603AQE_v4HRtoy0XQ/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1692997661681?e=1752105600&v=beta&t=eQexOGF1GjoNyrkE6cSMp330h91UYnC1Y46iirrNXIE"
+
+    def format_date(iso_date):
+        try:
+            dt = datetime.strptime(iso_date, "%Y-%m-%d")
+            return dt.strftime("%B %d, %Y")  # e.g., May 1, 2024
+        except:
+            return iso_date
+
     return [
         {
             "user_name": "Franco",
+            "profile_img": avatar_url("Franco"),
             "stars": "⭐⭐⭐⭐⭐",
-            "description": f"I loved the views at {trail_name}! Definitely going again"
+            "description": f"I loved the views at {trail_name}! Definitely going again",
+            "date": format_date("2024-05-06")
         },
         {
             "user_name": "Ali",
+            "profile_img": avatar_url("Ali"),
             "stars": "⭐⭐⭐",
-            "description": f"{trail_name} was great, but it got a bit crowded around noon."
+            "description": f"{trail_name} was great, but it got a bit crowded around noon.",
+            "date": format_date("2024-05-03")
         },
         {
             "user_name": "Brevin",
+            "profile_img": avatar_url("Brevin"),
             "stars": "⭐⭐⭐⭐",
-            "description": f"Beautiful trail with a lot, of shade!"
+            "description": f"Beautiful trail with a lot, of shade!",
+            "date": format_date("2024-03-017")
         },
         {
             "user_name": "Truong",
+            "profile_img": avatar_url("Truong"),
             "stars": "⭐⭐⭐⭐⭐",
-            "description": f"This was the best trail I've ever done! Absolutely would recommend!"
+            "description": f"This was the best trail I've ever done! Absolutely would recommend!",
+            "date": format_date("2023-12-13")
         },
         {
             "user_name": "Rob",
+            "profile_img": avatar_url("Rob"),
             "stars": "⭐⭐",
-            "description": f"Nice path through {trail_name}. Could use more shade."
+            "description": f"Nice path through {trail_name}. Could use more shade.",
+            "date": format_date("2023-11-06")
         }
     ]
 

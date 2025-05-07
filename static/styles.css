@@ -187,3 +187,22 @@ vertical-align: text-bottom;
 .orange-badge {
     background-color: #FFA726;
 }
+
+.card {
+  border-radius: 0.75rem;
+}
+
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  transition: 0.2s ease-in-out;
+}
+
+
+.card-body {
+  padding: 1.25rem;
+}
+
+h6 {
+  font-weight: 600;
+}
