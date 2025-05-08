@@ -222,7 +222,7 @@ def get_hardcoded_reviews_for_trail(trail_id, trail_name="this trail"):
             "profile_img": avatar_url("Brevin"),
             "stars": "⭐⭐⭐⭐",
             "description": f"Beautiful trail with a lot, of shade!",
-            "date": format_date("2024-03-017")
+            "date": format_date("2024-03-17")
         },
         {
             "user_name": "Truong",
