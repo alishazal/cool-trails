@@ -258,8 +258,8 @@
           `Wind Speed: ${weatherData.wind.speed} m/s`;
       }
       const llm_input =
-        `Provide packing recommendations for the following trail: {{trail.name}} ` +
-        `given the following information:\n${weather_info}` +
+        `Provide packing recommendations for the following trail: {{trail.name}}. Keep in mind that the trail is {{trail.length_m}} meters long.` +
+        `Use the following information as well:\n${weather_info}` +
         `Give a maximum of 5 recommendations.`;
       console.log("LLM Input:", llm_input);
       return llm_input;
