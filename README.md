@@ -80,3 +80,4 @@ If you make changes to the database schema, delete the trails.db file and run th
 - [Brevin Smider](https://github.com/bsmider)
 - [Robert Moore](https://github.com/rlmoore-b)
 - [Franco Lopez](https://github.com/FrancoLopezDev)
+- [Truong Hai Nguyen](https://www.linkedin.com/in/truong-h-nguyen/)
